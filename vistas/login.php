@@ -9,6 +9,7 @@ if (isset($_SESSION['usuario'])) {
     header('Location: dashboard.php');
     exit();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -17,6 +18,8 @@ if (isset($_SESSION['usuario'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Gaming Center</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script src="../js/validacionLogin.js" defer></script>
 </head>
 <body class="pagina-login">
     <main class="login-panel">
@@ -34,15 +37,18 @@ if (isset($_SESSION['usuario'])) {
         }
         ?>
 
-        <form class="login-formulario" action="../procs/login_proc.php" method="POST">
+        <form class="login-formulario" action="../procs/login_proc.php" method="POST" novalidate
+            onsubmit="return validarLogin()">
             <div class="campo">
                 <label for="username">Usuario</label>
-                <input type="text" id="username" name="username" maxlength="30" placeholder="gamemaster01" required>
+                <input type="text" id="username" name="username" maxlength="30" placeholder="gamemaster01"
+                    required onblur="validarCampo(this)">
             </div>
 
             <div class="campo">
                 <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" placeholder="••••••••" required>
+                <input type="password" id="password" name="password" placeholder="••••••••"
+                    required onblur="validarCampo(this)">
             </div>
 
             <button type="submit" class="boton-login">Iniciar sesión</button>

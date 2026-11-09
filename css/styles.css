@@ -62,6 +62,39 @@ body {
     color: var(--color-libre);
 }
 
+/* SweetAlert con los colores oscuros y neón del Gaming Center */
+.gaming-alert-popup {
+    background: var(--bg-tarjeta) !important;
+    border: 1px solid var(--color-pc);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra), 0 0 25px rgba(0, 210, 255, 0.18);
+}
+
+.gaming-alert-title {
+    color: var(--texto) !important;
+}
+
+.gaming-alert-text {
+    color: var(--texto-secundario) !important;
+}
+
+.gaming-alert-button {
+    padding: 10px 20px;
+    border: 1px solid var(--color-pc);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-pc);
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.gaming-alert-button:hover {
+    background: var(--color-pc);
+    color: var(--bg-principal);
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.35);
+}
+
 /* ---------- LOGIN ---------- */
 
 /* Centra el panel en la pantalla con flexbox */
@@ -152,6 +185,19 @@ body {
     box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.15);
 }
 
+.login-formulario input.campo-error,
+.login-formulario input.campo-error:focus {
+    border-color: var(--color-ocupado);
+    box-shadow: 0 0 0 3px rgba(255, 70, 85, 0.15);
+}
+
+.aviso-campo-error {
+    display: block;
+    margin-top: 6px;
+    color: var(--color-ocupado);
+    font-size: 0.8rem;
+}
+
 .boton-login {
     width: 100%;
     padding: 13px;
@@ -204,4 +250,3 @@ body {
     background-color: var(--color-vip);
     box-shadow: 0 0 8px var(--color-vip);
 }
-
