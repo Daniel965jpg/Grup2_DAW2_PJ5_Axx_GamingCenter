@@ -1,0 +1,207 @@
+/* =========================================================
+   GAMING CENTER - Estilos generales
+   Tema oscuro que imita el interior de un PC.
+   Los colores van en variables para cambiarlos desde un solo sitio.
+   ========================================================= */
+
+:root {
+    /* Fondos */
+    --bg-principal: #090c10;
+    --bg-tarjeta: #161b22;
+    --bg-input: #0d1117;
+    --borde: #30363d;
+
+    /* Texto */
+    --texto: #e6edf3;
+    --texto-secundario: #8b949e;
+
+    /* Colores de hardware (tipos de sala) */
+    --color-pc: #00d2ff;
+    --color-consola: #a855f7;
+    --color-vip: #f59e0b;
+
+    /* Colores de estado (módulos) */
+    --color-libre: #00ff88;
+    --color-ocupado: #ff4655;
+
+    /* Medidas comunes */
+    --radio: 12px;
+    --sombra: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    background-color: var(--bg-principal);
+    color: var(--texto);
+}
+
+/* ---------- Mensajes de aviso (error / éxito) ---------- */
+
+.mensaje-aviso {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.mensaje-aviso-error {
+    background-color: rgba(255, 70, 85, 0.1);
+    border: 1px solid var(--color-ocupado);
+    color: var(--color-ocupado);
+}
+
+.mensaje-aviso-exito {
+    background-color: rgba(0, 255, 136, 0.1);
+    border: 1px solid var(--color-libre);
+    color: var(--color-libre);
+}
+
+/* ---------- LOGIN ---------- */
+
+/* Centra el panel en la pantalla con flexbox */
+.pagina-login {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    /* Rejilla muy sutil de fondo, como una placa base */
+    background-image:
+        linear-gradient(rgba(0, 210, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 210, 255, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+.login-panel {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--bg-tarjeta);
+    border: 1px solid var(--borde);
+    border-top: 3px solid var(--color-pc);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra), 0 0 25px rgba(0, 210, 255, 0.08);
+    padding: 40px 32px 28px;
+}
+
+.login-cabecera {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.login-estado {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: var(--color-libre);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.login-titulo {
+    font-size: 1.9rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--texto);
+    text-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+}
+
+.login-subtitulo {
+    font-size: 0.85rem;
+    color: var(--texto-secundario);
+    margin-top: 6px;
+}
+
+.login-formulario .campo {
+    margin-bottom: 20px;
+}
+
+.login-formulario label {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--texto-secundario);
+    margin-bottom: 8px;
+}
+
+.login-formulario input {
+    width: 100%;
+    padding: 12px 14px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    color: var(--texto);
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-formulario input::placeholder {
+    color: #484f58;
+}
+
+/* Al escribir, el input se ilumina en azul neón */
+.login-formulario input:focus {
+    outline: none;
+    border-color: var(--color-pc);
+    box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.15);
+}
+
+.boton-login {
+    width: 100%;
+    padding: 13px;
+    margin-top: 8px;
+    background-color: transparent;
+    border: 1px solid var(--color-pc);
+    border-radius: 8px;
+    color: var(--color-pc);
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+/* Efecto neón verde al pasar el ratón, como el color de "libre" */
+.boton-login:hover {
+    background-color: var(--color-libre);
+    border-color: var(--color-libre);
+    color: var(--bg-principal);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+/* Tres puntitos con los colores de las salas como detalle decorativo */
+.login-pie {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 28px;
+}
+
+.punto {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.punto-pc {
+    background-color: var(--color-pc);
+    box-shadow: 0 0 8px var(--color-pc);
+}
+
+.punto-consola {
+    background-color: var(--color-consola);
+    box-shadow: 0 0 8px var(--color-consola);
+}
+
+.punto-vip {
+    background-color: var(--color-vip);
+    box-shadow: 0 0 8px var(--color-vip);
+}
+
