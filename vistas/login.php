@@ -27,7 +27,7 @@ if (isset($_SESSION['usuario'])) {
 
     <main class="login-panel">
         <div class="login-cabecera">
-            <span class="login-estado">● Sistema en línea</span>
+            <span class="login-estado">Sistema en línea</span>
             <h1 class="login-titulo">Gaming Center</h1>
             <p class="login-subtitulo">Panel de control · Acceso del personal</p>
         </div>
@@ -43,15 +43,15 @@ if (isset($_SESSION['usuario'])) {
         <!-- novalidate desactiva los avisos del navegador para que se vean los nuestros (script.js) -->
         <form class="login-formulario" action="../procs/login_proc.php" method="POST" id="formulario-login" novalidate>
             <div class="campo">
-                <label for="username">Usuario</label>
-                <input type="text" id="username" name="username" maxlength="30" placeholder="gamemaster01" required>
-                <small id="username-error" class="aviso-campo-error"></small>
+                <label for="usuario">Usuario</label>
+                <input type="text" id="usuario" name="usuario" maxlength="30" placeholder="gamemaster01" required>
+                <small id="usuario-error" class="aviso-campo-error"></small>
             </div>
 
             <div class="campo">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" placeholder="••••••••" required>
-                <small id="password-error" class="aviso-campo-error"></small>
+                <label for="contrasena">Contraseña</label>
+                <input type="password" id="contrasena" name="contrasena" placeholder="••••••••" required>
+                <small id="contrasena-error" class="aviso-campo-error"></small>
             </div>
 
             <button type="submit" class="boton-login">Iniciar sesión</button>
