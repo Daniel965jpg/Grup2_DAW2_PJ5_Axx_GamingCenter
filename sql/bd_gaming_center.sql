@@ -41,3 +41,10 @@ CREATE TABLE ocupaciones (
     FOREIGN KEY (id_modulo) REFERENCES modulos (id_modulo),
     FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario)
 );
+
+INSERT INTO usuarios (username, password, nom_real, cognom_real, rol) VALUES
+('admin', '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Admin', 'Global', 'admin'),
+('izan',  '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Izan', 'Apellido', 'gamemaster'),
+('hao',   '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Hao', 'Apellido', 'gamemaster'),
+('enric', '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Enric', 'Apellido', 'gamemaster'),
+('dani',  '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Dani', 'Apellido', 'gamemaster');

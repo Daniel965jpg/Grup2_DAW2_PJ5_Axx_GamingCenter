@@ -141,6 +141,14 @@ body {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+/* Mensaje que escribe script.js debajo de un campo vacío */
+.aviso-campo-error {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: var(--color-ocupado);
+}
+
 .login-formulario input::placeholder {
     color: #484f58;
 }
