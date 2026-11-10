@@ -20,7 +20,12 @@ if (isset($_SESSION['usuario'])) {
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body class="pagina-login">
-    <main class="login-panel">  
+    <!-- muted es obligatorio para que el navegador deje reproducirlo solo; playsinline evita que el móvil lo abra a pantalla completa -->
+    <video class="video-fondo" autoplay muted loop playsinline>
+        <source src="../img/video-fondo-gamingcenter.mp4" type="video/mp4">
+    </video>
+
+    <main class="login-panel">
         <div class="login-cabecera">
             <span class="login-estado">● Sistema en línea</span>
             <h1 class="login-titulo">Gaming Center</h1>

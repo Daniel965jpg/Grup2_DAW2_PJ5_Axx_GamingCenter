@@ -5,6 +5,10 @@ if (!isset($_SESSION['usuario'])) {
     header('Location: login.php');
     exit();
 }
+
+require_once '../includes/funciones.php';
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

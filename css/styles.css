@@ -78,10 +78,23 @@ body {
     background-size: 40px 40px;
 }
 
+/* Vídeo de fondo: fijo detrás de todo y ocupando toda la pantalla.
+   Al ser fixed sale del flujo, así que el flexbox del body sigue centrando el panel. */
+.video-fondo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;          /* rellena la pantalla sin deformarse (recorta lo que sobra) */
+    z-index: -1;                /* detrás del panel */
+    filter: brightness(0.35);   /* lo oscurecemos para que el formulario se lea bien */
+}
+
 .login-panel {
     width: 100%;
     max-width: 400px;
-    background-color: var(--bg-tarjeta);
+    background-color: rgba(22, 27, 34, 0.85);  /* --bg-tarjeta un poco transparente para que se intuya el vídeo */
     border: 1px solid var(--borde);
     border-top: 3px solid var(--color-pc);
     border-radius: var(--radio);
