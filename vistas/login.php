@@ -9,7 +9,6 @@ if (isset($_SESSION['usuario'])) {
     header('Location: dashboard.php');
     exit();
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -19,8 +18,6 @@ if (isset($_SESSION['usuario'])) {
     <title>Login - Gaming Center</title>
     <link rel="icon" type="image/png" href="../img/favicon.png">
     <link rel="stylesheet" href="../css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
-    <script src="../js/validacionLogin.js" defer></script>
 </head>
 <body class="pagina-login">
     <!-- muted es obligatorio para que el navegador deje reproducirlo solo; playsinline evita que el móvil lo abra a pantalla completa -->
