@@ -62,39 +62,6 @@ body {
     color: var(--color-libre);
 }
 
-/* SweetAlert con los colores oscuros y neón del Gaming Center */
-.gaming-alert-popup {
-    background: var(--bg-tarjeta) !important;
-    border: 1px solid var(--color-pc);
-    border-radius: var(--radio);
-    box-shadow: var(--sombra), 0 0 25px rgba(0, 210, 255, 0.18);
-}
-
-.gaming-alert-title {
-    color: var(--texto) !important;
-}
-
-.gaming-alert-text {
-    color: var(--texto-secundario) !important;
-}
-
-.gaming-alert-button {
-    padding: 10px 20px;
-    border: 1px solid var(--color-pc);
-    border-radius: 8px;
-    background: transparent;
-    color: var(--color-pc);
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
-}
-
-.gaming-alert-button:hover {
-    background: var(--color-pc);
-    color: var(--bg-principal);
-    box-shadow: 0 0 15px rgba(0, 210, 255, 0.35);
-}
-
 /* ---------- LOGIN ---------- */
 
 /* Centra el panel en la pantalla con flexbox */
@@ -206,19 +173,6 @@ body {
     box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.15);
 }
 
-.login-formulario input.campo-error,
-.login-formulario input.campo-error:focus {
-    border-color: var(--color-ocupado);
-    box-shadow: 0 0 0 3px rgba(255, 70, 85, 0.15);
-}
-
-.aviso-campo-error {
-    display: block;
-    margin-top: 6px;
-    color: var(--color-ocupado);
-    font-size: 0.8rem;
-}
-
 .boton-login {
     width: 100%;
     padding: 13px;
@@ -272,3 +226,119 @@ body {
     box-shadow: 0 0 8px var(--color-vip);
 }
 
+
+
+/* ---------- DASHBOARD ---------- */
+
+.cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background-color: var(--bg-tarjeta);
+    border-bottom: 1px solid var(--borde);
+}
+
+.cabecera-titulo {
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+}
+
+.cabecera-usuario {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--texto-secundario);
+}
+
+.boton-salir {
+    padding: 8px 14px;
+    border: 1px solid var(--color-ocupado);
+    border-radius: 8px;
+    color: var(--color-ocupado);
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.boton-salir:hover {
+    background-color: var(--color-ocupado);
+    color: var(--bg-principal);
+}
+
+/* Cuadrícula de salas: caben tantas columnas como permita el ancho, de 250px como mínimo */
+.contenedor-tarjetas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 24px;
+}
+
+.mensaje-vacio {
+    color: var(--texto-secundario);
+}
+
+.tarjeta-sala {
+    background-color: var(--bg-tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    padding: 20px;
+}
+
+/* Color de la sala según su tipo (la clase la pone el PHP con $sala['tipo']) */
+.tarjeta-pc {
+    border-top: 3px solid var(--color-pc);
+}
+
+.tarjeta-consola {
+    border-top: 3px solid var(--color-consola);
+}
+
+.tarjeta-vip {
+    border-top: 3px solid var(--color-vip);
+}
+
+.tarjeta-nombre {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+}
+
+.tarjeta-tipo {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--texto-secundario);
+    margin-bottom: 16px;
+}
+
+.tarjeta-estados {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.estado-libre {
+    color: var(--color-libre);
+}
+
+.estado-ocupado {
+    color: var(--color-ocupado);
+}
+
+.boton-sala {
+    display: block;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid var(--color-pc);
+    border-radius: 8px;
+    color: var(--color-pc);
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.boton-sala:hover {
+    background-color: var(--color-pc);
+    color: var(--bg-principal);
+}
