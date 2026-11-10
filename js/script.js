@@ -5,23 +5,23 @@
 // Asignamos los eventos desde aquí y no en el HTML.
 // El script se carga al final del <body>, así que los elementos ya existen.
 document.getElementById("formulario-login").onsubmit = validarLogin;
-document.getElementById("username").onblur = validarUsuario;
-document.getElementById("password").onblur = validarPassword;
+document.getElementById("usuario").onblur = validarUsuario;
+document.getElementById("contrasena").onblur = validarContrasena;
 
 // Al enviar el formulario. Si devuelve false, el formulario no se envía.
 function validarLogin() {
     // Validamos los dos para que salgan los dos mensajes a la vez si hace falta
     const usuarioValido = validarUsuario();
-    const passwordValida = validarPassword();
+    const contrasenaValida = validarContrasena();
 
     if (!usuarioValido) {
-        document.getElementById("username").focus();
+        document.getElementById("usuario").focus();
         mostrarAviso("el usuario");
         return false;
     }
 
-    if (!passwordValida) {
-        document.getElementById("password").focus();
+    if (!contrasenaValida) {
+        document.getElementById("contrasena").focus();
         mostrarAviso("la contraseña");
         return false;
     }
@@ -31,8 +31,8 @@ function validarLogin() {
 
 // Al salir del campo usuario: escribe el aviso debajo o lo borra si ya está bien
 function validarUsuario() {
-    const usuario = document.getElementById("username").value;
-    const error = document.getElementById("username-error");
+    const usuario = document.getElementById("usuario").value;
+    const error = document.getElementById("usuario-error");
 
     if (usuario.trim() == "") {
         error.textContent = "Falta escribir el usuario.";
@@ -44,11 +44,11 @@ function validarUsuario() {
 }
 
 // Al salir del campo contraseña: lo mismo que con el usuario
-function validarPassword() {
-    const password = document.getElementById("password").value;
-    const error = document.getElementById("password-error");
+function validarContrasena() {
+    const contrasena = document.getElementById("contrasena").value;
+    const error = document.getElementById("contrasena-error");
 
-    if (password.trim() == "") {
+    if (contrasena.trim() == "") {
         error.textContent = "Falta escribir la contraseña.";
         return false;
     }
