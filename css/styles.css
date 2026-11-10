@@ -267,56 +267,8 @@ body {
     color: var(--bg-principal);
 }
 
-/* Cuadrícula de salas: caben tantas columnas como permita el ancho, de 250px como mínimo */
-.contenedor-tarjetas {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 24px;
-}
-
 .mensaje-vacio {
     color: var(--texto-secundario);
-}
-
-.tarjeta-sala {
-    background-color: var(--bg-tarjeta);
-    border: 1px solid var(--borde);
-    border-radius: var(--radio);
-    box-shadow: var(--sombra);
-    padding: 20px;
-}
-
-/* Color de la sala según su tipo (la clase la pone el PHP con $sala['tipo']) */
-.tarjeta-pc {
-    border-top: 3px solid var(--color-pc);
-}
-
-.tarjeta-consola {
-    border-top: 3px solid var(--color-consola);
-}
-
-.tarjeta-vip {
-    border-top: 3px solid var(--color-vip);
-}
-
-.tarjeta-nombre {
-    font-size: 1.2rem;
-    margin-bottom: 4px;
-}
-
-.tarjeta-tipo {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--texto-secundario);
-    margin-bottom: 16px;
-}
-
-.tarjeta-estados {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 16px;
 }
 
 .estado-libre {
@@ -327,18 +279,229 @@ body {
     color: var(--color-ocupado);
 }
 
-.boton-sala {
-    display: block;
-    padding: 10px;
-    text-align: center;
-    border: 1px solid var(--color-pc);
-    border-radius: 8px;
-    color: var(--color-pc);
-    text-decoration: none;
-    transition: background-color 0.2s, color 0.2s;
+/* El aviso de error del dashboard va fuera de una tarjeta, así que le damos margen */
+body > .mensaje-aviso {
+    margin: 24px 24px 0;
 }
 
-.boton-sala:hover {
-    background-color: var(--color-pc);
-    color: var(--bg-principal);
+/* ---------- SALA (vista de puestos) ---------- */
+
+/* Línea inferior de la cabecera con el color del tipo de sala */
+.cabecera-pc {
+    border-bottom: 2px solid var(--color-pc);
+}
+
+.cabecera-consola {
+    border-bottom: 2px solid var(--color-consola);
+}
+
+.cabecera-vip {
+    border-bottom: 2px solid var(--color-vip);
+}
+
+.boton-volver {
+    color: var(--texto-secundario);
+    text-decoration: none;
+}
+
+.boton-volver:hover {
+    color: var(--color-pc);
+}
+
+.selector-sala {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--texto-secundario);
+}
+
+.selector-sala select {
+    padding: 8px 12px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    color: var(--texto);
+}
+
+.vista-puestos {
+    padding: 24px;
+}
+
+.grupo-formato {
+    margin-bottom: 32px;
+}
+
+.titulo-formato {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--texto-secundario);
+    margin-bottom: 12px;
+}
+
+/* Squads y solos: los puestos uno detrás de otro, bajando de línea cuando no caben */
+.lista-squad,
+.lista-solo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* Dúos: cada pareja va en su caja y entre cajas hay más separación */
+.lista-duo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.caja-pareja {
+    display: flex;
+    gap: 6px;
+    padding: 8px;
+    border: 1px dashed var(--borde);
+    border-radius: var(--radio);
+}
+
+.tarjeta-puesto {
+    width: 120px;
+    padding: 14px 10px;
+    text-align: center;
+    background-color: var(--bg-tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    font-size: 0.8rem;
+}
+
+/* estado-libre y estado-ocupado ya ponen el color del texto; aquí añadimos el borde */
+.tarjeta-puesto.estado-libre {
+    border-color: var(--color-libre);
+}
+
+.tarjeta-puesto.estado-ocupado {
+    border-color: var(--color-ocupado);
+}
+
+.nombre-puesto {
+    display: block;
+    margin-top: 8px;
+    color: var(--texto);
+    font-weight: bold;
+}
+
+/* ---------- DASHBOARD: zonas en tarjetas de neón ---------- */
+
+/* La cabecera y las tarjetas forman una sola pantalla: el body ocupa todo el alto
+   y se reparte en columna (cabecera arriba, tarjetas debajo) */
+.pagina-panel {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.cabecera-bienvenida {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--texto-secundario);
+}
+
+/* flex: 1 hace que esta zona se estire hasta el final de la pantalla,
+   y la rejilla la reparte en 4 columnas iguales */
+.zonas {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 24px;
+}
+
+/* Base de las 4 tarjetas. El color lo ponen las variables --neon y --neon-suave,
+   que cambia cada clase de color (tarjeta-pc, tarjeta-consola...) */
+.tarjeta-zona {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 32px 20px;
+    text-align: center;
+    background-color: var(--bg-tarjeta);
+    border: 2px solid var(--neon);
+    border-radius: var(--radio);
+    color: var(--texto);
+    text-decoration: none;
+    /* Dos sombras: una de brillo por fuera y otra por dentro, como un tubo de neón */
+    box-shadow: 0 0 15px var(--neon-suave), inset 0 0 25px var(--neon-suave);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* Al pasar el ratón la tarjeta sube un poco y el neón brilla más */
+.tarjeta-zona:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 35px var(--neon), inset 0 0 40px var(--neon-suave);
+}
+
+/* Esquinas decorativas tipo "pantalla de consola": arriba a la izquierda y abajo a la derecha */
+.tarjeta-zona::before,
+.tarjeta-zona::after {
+    content: "";
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--neon);
+}
+
+.tarjeta-zona::before {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.tarjeta-zona::after {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+}
+
+.tarjeta-zona h2 {
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--neon);
+    text-shadow: 0 0 10px var(--neon);
+}
+
+.zona-descripcion {
+    font-size: 0.9rem;
+    color: var(--texto-secundario);
+}
+
+.zona-estados {
+    display: flex;
+    gap: 20px;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+/* Colores de cada zona: solo cambian las dos variables del neón */
+.tarjeta-pc {
+    --neon: var(--color-pc);
+    --neon-suave: rgba(0, 210, 255, 0.25);
+}
+
+.tarjeta-consola {
+    --neon: var(--color-consola);
+    --neon-suave: rgba(168, 85, 247, 0.25);
+}
+
+.tarjeta-vip {
+    --neon: var(--color-vip);
+    --neon-suave: rgba(245, 158, 11, 0.25);
+}
+
+.tarjeta-historico {
+    --neon: var(--texto);
+    --neon-suave: rgba(230, 237, 243, 0.15);
 }

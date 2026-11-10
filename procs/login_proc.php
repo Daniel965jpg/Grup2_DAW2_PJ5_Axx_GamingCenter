@@ -6,7 +6,7 @@
 session_start();
 
 // Si alguien entra aquí escribiendo la URL, sin pasar por el formulario, lo devolvemos al login
-if (!isset($_POST['username']) || !isset($_POST['password'])) {
+if (!isset($_POST['usuario']) || !isset($_POST['contrasena'])) {
     header('Location: ../vistas/login.php');
     exit();
 }
@@ -14,12 +14,12 @@ if (!isset($_POST['username']) || !isset($_POST['password'])) {
 require_once '../bd/conexion.php';
 require_once '../includes/funciones.php';
 
-$username = limpiarDato($_POST['username']);
+$nombre_usuario = limpiarDato($_POST['usuario']);
 // La contraseña no se limpia: si se tocara ya no coincidiría con el hash guardado
-$password = $_POST['password'];
+$contrasena = $_POST['contrasena'];
 
 // El required del HTML se puede saltar, así que lo volvemos a comprobar en el servidor
-if (camposVacios($username, $password)) {
+if (camposVacios($nombre_usuario, $contrasena)) {
     $_SESSION['error'] = 'Tienes que rellenar todos los campos.';
     header('Location: ../vistas/login.php');
     exit();
@@ -28,7 +28,7 @@ if (camposVacios($username, $password)) {
 try {
     $sql = "SELECT id_usuario, password, rol FROM usuarios WHERE username = ?";
     $stmt = $conexion->prepare($sql);
-    $stmt->execute([$username]);
+    $stmt->execute([$nombre_usuario]);
 } catch (PDOException $e) {
     echo "Error al comprobar el usuario: " . $e->getMessage();
     die();
@@ -37,9 +37,9 @@ try {
 // username es UNIQUE, así que si existe solo puede salir una fila
 if ($stmt->rowCount() === 1) {
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-    $bd_password = $usuario['password'];
+    $contrasena_guardada = $usuario['password'];
 
-    if (password_verify($password, $bd_password)) {
+    if (password_verify($contrasena, $contrasena_guardada)) {
         $_SESSION['usuario'] = $usuario['id_usuario'];
         header('Location: ../vistas/dashboard.php');
         exit();
