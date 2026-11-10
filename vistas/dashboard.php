@@ -1,6 +1,7 @@
 <?php
 // VISTA: DASHBOARD
-// Pantalla principal tras el login: una tarjeta por sala con sus módulos libres y ocupados.
+// Pantalla principal tras el login: cuatro tarjetas grandes para entrar a cada zona del local
+// (PC Standard, Consolas, VIP) o al histórico. Cada zona enseña cuántos puestos hay libres y ocupados.
 
 session_start();
 
@@ -12,6 +13,7 @@ if (!isset($_SESSION['usuario'])) {
 
 require_once '../bd/conexion.php';
 
+//Recoger variable de sesión de login
 $mi_id = $_SESSION['usuario'];
 
 try {
@@ -21,18 +23,23 @@ try {
     $stmt->execute([$mi_id]);
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Por cada módulo de la sala, CASE devuelve 1 si cumple el estado y 0 si no,
-    // y SUM suma esos 1: así sale cuántos hay libres y cuántos ocupados.
-    // LEFT JOIN para que una sala sin módulos también salga (con 0 y 0).
-    $sql = "SELECT salas.id_sala, salas.nombre, salas.tipo,
-                   SUM(CASE WHEN modulos.estado = 'lliure' THEN 1 ELSE 0 END) AS libres,
-                   SUM(CASE WHEN modulos.estado = 'ocupat' THEN 1 ELSE 0 END) AS ocupados
-            FROM salas
-            LEFT JOIN modulos ON salas.id_sala = modulos.id_sala
-            GROUP BY salas.id_sala, salas.nombre, salas.tipo";
-    $stmt = $conexion->prepare($sql);
-    $stmt->execute();
-    $salas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Cuenta los puestos de un estado dentro de las salas de un tipo.
+    // Se prepara una sola vez y luego se ejecuta para cada zona dentro del foreach.
+    $sql = "SELECT COUNT(*) AS total FROM modulos
+            WHERE estado = ? AND id_sala IN (SELECT id_sala FROM salas WHERE tipo = ?)";
+    $stmt_contar = $conexion->prepare($sql);
+
+    $tipos = ['pc', 'consola', 'vip'];
+    $resumen = [];
+    foreach ($tipos as $tipo) {
+        $stmt_contar->execute(['lliure', $tipo]);
+        $fila = $stmt_contar->fetch(PDO::FETCH_ASSOC);
+        $resumen[$tipo]['libres'] = $fila['total'];
+
+        $stmt_contar->execute(['ocupat', $tipo]);
+        $fila = $stmt_contar->fetch(PDO::FETCH_ASSOC);
+        $resumen[$tipo]['ocupados'] = $fila['total'];
+    }
 } catch (PDOException $e) {
     echo "Error al cargar el dashboard: " . $e->getMessage();
     die();
@@ -46,34 +53,60 @@ try {
     <link rel="icon" type="image/png" href="../img/favicon.png">
     <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body>
+<body class="pagina-panel">
     <header class="cabecera">
-        <h1 class="cabecera-titulo">Panel de Control</h1>
+        <div>
+            <h1 class="cabecera-titulo">Panel de Control</h1>
+            <p class="cabecera-bienvenida">Bienvenido, <?php echo $usuario['nom_real']; ?>. Selecciona una zona para gestionar la ocupación de las salas.</p>
+        </div>
         <div class="cabecera-usuario">
             <span><?php echo $usuario['nom_real']; ?> (<?php echo $usuario['rol']; ?>)</span>
             <a href="../procs/logout.php" class="boton-salir">Cerrar sesión</a>
         </div>
     </header>
 
-    <main class="contenedor-tarjetas">
-        <?php if (empty($salas)) { ?>
-            <p class="mensaje-vacio">Todavía no hay salas registradas.</p>
-        <?php } ?>
+    <?php
+    // Por ejemplo, si sala.php nos devuelve aquí porque la zona no tiene salas
+    if (isset($_SESSION['error'])) {
+        echo "<div class='mensaje-aviso mensaje-aviso-error'>" . $_SESSION['error'] . "</div>";
+        unset($_SESSION['error']);
+    }
+    ?>
 
-        <?php foreach ($salas as $sala) { ?>
-            <!-- La segunda clase depende del tipo (pc, consola o vip) y le da el color de la sala -->
-            <div class="tarjeta-sala tarjeta-<?php echo $sala['tipo']; ?>">
-                <h2 class="tarjeta-nombre"><?php echo $sala['nombre']; ?></h2>
-                <p class="tarjeta-tipo"><?php echo $sala['tipo']; ?></p>
-
-                <div class="tarjeta-estados">
-                    <p class="estado-libre">Libres: <?php echo $sala['libres']; ?></p>
-                    <p class="estado-ocupado">Ocupados: <?php echo $sala['ocupados']; ?></p>
-                </div>
-
-                <a href="sala.php?id=<?php echo $sala['id_sala']; ?>" class="boton-sala">Entrar a la sala</a>
+    <!-- Las 4 tarjetas ocupan todo el alto que queda debajo de la cabecera -->
+    <main class="zonas">
+        <!-- El tipo va por GET en el enlace: sala.php enseña solo las salas de ese tipo -->
+        <a href="sala.php?tipo=pc" class="tarjeta-zona tarjeta-pc">
+            <h2>PC Standard</h2>
+            <p class="zona-descripcion">Ordenadores para jugar solo, en dúo o en squad</p>
+            <div class="zona-estados">
+                <span class="estado-libre"><?php echo $resumen['pc']['libres']; ?> libres</span>
+                <span class="estado-ocupado"><?php echo $resumen['pc']['ocupados']; ?> ocupados</span>
             </div>
-        <?php } ?>
+        </a>
+
+        <a href="sala.php?tipo=consola" class="tarjeta-zona tarjeta-consola">
+            <h2>Consolas y Simuladores</h2>
+            <p class="zona-descripcion">PS5, volantes y simuladores</p>
+            <div class="zona-estados">
+                <span class="estado-libre"><?php echo $resumen['consola']['libres']; ?> libres</span>
+                <span class="estado-ocupado"><?php echo $resumen['consola']['ocupados']; ?> ocupados</span>
+            </div>
+        </a>
+
+        <a href="sala.php?tipo=vip" class="tarjeta-zona tarjeta-vip">
+            <h2>Salas VIP</h2>
+            <p class="zona-descripcion">Equipos Pro para grupos</p>
+            <div class="zona-estados">
+                <span class="estado-libre"><?php echo $resumen['vip']['libres']; ?> libres</span>
+                <span class="estado-ocupado"><?php echo $resumen['vip']['ocupados']; ?> ocupados</span>
+            </div>
+        </a>
+
+        <a href="historico.php" class="tarjeta-zona tarjeta-historico">
+            <h2>Histórico</h2>
+            <p class="zona-descripcion">Registro de todas las ocupaciones</p>
+        </a>
     </main>
 </body>
 </html>
