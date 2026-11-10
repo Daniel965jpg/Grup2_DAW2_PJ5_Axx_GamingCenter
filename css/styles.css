@@ -111,10 +111,23 @@ body {
     background-size: 40px 40px;
 }
 
+/* Vídeo de fondo: fijo detrás de todo y ocupando toda la pantalla.
+   Al ser fixed sale del flujo, así que el flexbox del body sigue centrando el panel. */
+.video-fondo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;          /* rellena la pantalla sin deformarse (recorta lo que sobra) */
+    z-index: -1;                /* detrás del panel */
+    filter: brightness(0.35);   /* lo oscurecemos para que el formulario se lea bien */
+}
+
 .login-panel {
     width: 100%;
     max-width: 400px;
-    background-color: var(--bg-tarjeta);
+    background-color: rgba(22, 27, 34, 0.85);  /* --bg-tarjeta un poco transparente para que se intuya el vídeo */
     border: 1px solid var(--borde);
     border-top: 3px solid var(--color-pc);
     border-radius: var(--radio);
@@ -172,6 +185,14 @@ body {
     color: var(--texto);
     font-size: 1rem;
     transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Mensaje que escribe script.js debajo de un campo vacío */
+.aviso-campo-error {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: var(--color-ocupado);
 }
 
 .login-formulario input::placeholder {
@@ -249,4 +270,121 @@ body {
 .punto-vip {
     background-color: var(--color-vip);
     box-shadow: 0 0 8px var(--color-vip);
+}
+
+
+
+/* ---------- DASHBOARD ---------- */
+
+.cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background-color: var(--bg-tarjeta);
+    border-bottom: 1px solid var(--borde);
+}
+
+.cabecera-titulo {
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+}
+
+.cabecera-usuario {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--texto-secundario);
+}
+
+.boton-salir {
+    padding: 8px 14px;
+    border: 1px solid var(--color-ocupado);
+    border-radius: 8px;
+    color: var(--color-ocupado);
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.boton-salir:hover {
+    background-color: var(--color-ocupado);
+    color: var(--bg-principal);
+}
+
+/* Cuadrícula de salas: caben tantas columnas como permita el ancho, de 250px como mínimo */
+.contenedor-tarjetas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 24px;
+}
+
+.mensaje-vacio {
+    color: var(--texto-secundario);
+}
+
+.tarjeta-sala {
+    background-color: var(--bg-tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    padding: 20px;
+}
+
+/* Color de la sala según su tipo (la clase la pone el PHP con $sala['tipo']) */
+.tarjeta-pc {
+    border-top: 3px solid var(--color-pc);
+}
+
+.tarjeta-consola {
+    border-top: 3px solid var(--color-consola);
+}
+
+.tarjeta-vip {
+    border-top: 3px solid var(--color-vip);
+}
+
+.tarjeta-nombre {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+}
+
+.tarjeta-tipo {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--texto-secundario);
+    margin-bottom: 16px;
+}
+
+.tarjeta-estados {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.estado-libre {
+    color: var(--color-libre);
+}
+
+.estado-ocupado {
+    color: var(--color-ocupado);
+}
+
+.boton-sala {
+    display: block;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid var(--color-pc);
+    border-radius: 8px;
+    color: var(--color-pc);
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.boton-sala:hover {
+    background-color: var(--color-pc);
+    color: var(--bg-principal);
 }
