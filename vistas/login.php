@@ -9,6 +9,7 @@ if (isset($_SESSION['usuario'])) {
     header('Location: dashboard.php');
     exit();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -18,6 +19,8 @@ if (isset($_SESSION['usuario'])) {
     <title>Login - Gaming Center</title>
     <link rel="icon" type="image/png" href="../img/favicon.png">
     <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script src="../js/validacionLogin.js" defer></script>
 </head>
 <body class="pagina-login">
     <!-- muted es obligatorio para que el navegador deje reproducirlo solo; playsinline evita que el móvil lo abra a pantalla completa -->
@@ -40,18 +43,15 @@ if (isset($_SESSION['usuario'])) {
         }
         ?>
 
-        <!-- novalidate desactiva los avisos del navegador para que se vean los nuestros (script.js) -->
-        <form class="login-formulario" action="../procs/login_proc.php" method="POST" id="formulario-login" novalidate>
+        <form class="login-formulario" action="../procs/login_proc.php" method="POST">
             <div class="campo">
                 <label for="username">Usuario</label>
                 <input type="text" id="username" name="username" maxlength="30" placeholder="gamemaster01" required>
-                <small id="username-error" class="aviso-campo-error"></small>
             </div>
 
             <div class="campo">
                 <label for="password">Contraseña</label>
                 <input type="password" id="password" name="password" placeholder="••••••••" required>
-                <small id="password-error" class="aviso-campo-error"></small>
             </div>
 
             <button type="submit" class="boton-login">Iniciar sesión</button>
