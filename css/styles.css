@@ -323,12 +323,32 @@ body > .mensaje-aviso {
     color: var(--texto);
 }
 
-.vista-puestos {
-    padding: 24px;
+/* La cabecera y los puestos forman exactamente una pantalla: alto fijo de 100vh y sin scroll.
+   Todo lo de dentro se encoge o se estira para caber, sea cual sea la pantalla o el número de PCs. */
+.pagina-sala {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
+/* flex: 1 estira esta zona hasta el final de la pantalla y la reparte en columna entre los bloques.
+   min-height: 0 deja que se encoja por debajo de lo que "le gustaría" medir a su contenido */
+.vista-puestos {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 24px;
+}
+
+/* Cada bloque (Squad, Dúo, Solo) se lleva un trozo igual del alto */
 .grupo-formato {
-    margin-bottom: 32px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .titulo-formato {
@@ -336,56 +356,41 @@ body > .mensaje-aviso {
     text-transform: uppercase;
     letter-spacing: 2px;
     color: var(--texto-secundario);
-    margin-bottom: 12px;
+    margin-bottom: 6px;
 }
 
-/* Squads y solos: los puestos uno detrás de otro, bajando de línea cuando no caben */
+/* Rejilla de 5 columnas iguales para squads y solos: así un PC solo mide lo mismo que uno del squad.
+   Si hay más de 5, bajan a otra fila. grid-auto-rows: minmax(0, 1fr) reparte el alto del bloque
+   a partes iguales entre las filas que haya (y deja que sean pequeñas si hace falta). */
 .lista-squad,
 .lista-solo {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-auto-rows: minmax(0, 1fr);
+    gap: 16px;
 }
 
-/* Dúos: cada pareja va en su caja y entre cajas hay más separación */
+/* Dúos: dos cajas por fila, y dentro de cada caja sus dos PCs a partes iguales */
 .lista-duo {
-    display: flex;
-    flex-wrap: wrap;
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(0, 1fr);
     gap: 24px;
 }
 
 .caja-pareja {
-    display: flex;
-    gap: 6px;
-    padding: 8px;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 12px;
+    padding: 6px;
     border: 1px dashed var(--borde);
     border-radius: var(--radio);
-}
-
-.tarjeta-puesto {
-    width: 120px;
-    padding: 14px 10px;
-    text-align: center;
-    background-color: var(--bg-tarjeta);
-    border: 1px solid var(--borde);
-    border-radius: 8px;
-    font-size: 0.8rem;
-}
-
-/* estado-libre y estado-ocupado ya ponen el color del texto; aquí añadimos el borde */
-.tarjeta-puesto.estado-libre {
-    border-color: var(--color-libre);
-}
-
-.tarjeta-puesto.estado-ocupado {
-    border-color: var(--color-ocupado);
-}
-
-.nombre-puesto {
-    display: block;
-    margin-top: 8px;
-    color: var(--texto);
-    font-weight: bold;
 }
 
 /* ---------- DASHBOARD: zonas en tarjetas de neón ---------- */
@@ -504,4 +509,138 @@ body > .mensaje-aviso {
 .tarjeta-historico {
     --neon: var(--texto);
     --neon-suave: rgba(230, 237, 243, 0.15);
+}
+
+.tarjeta-puesto {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0d1117;
+    /* Sin ancho ni alto fijos: la tarjeta ocupa toda su casilla de la rejilla */
+    min-height: 0;
+    padding: 8px;
+    border-radius: 8px;
+    text-decoration: none;
+    position: relative;
+    transition: all 0.3s ease; /* Efecto smooth al deslizar/interactuar */
+}
+
+.tarjeta-puesto:hover {
+    transform: translateY(-4px);
+    filter: brightness(1.15);
+}
+
+.indicador-estado {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.nombre-puesto {
+    color: #e6edf3;
+    font-size: 1.1rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Hueco para la imagen: todo lo que sobra entre el estado y el nombre (flex: 1) */
+.grafico-pc {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    width: 100%;
+    margin: 4px 0;
+}
+
+/* La imagen se coloca encima de ese hueco y lo rellena entero (position: absolute + inset: 0),
+   así no empuja la tarjeta: es ella la que se adapta al tamaño de la tarjeta y no al revés.
+   object-fit: contain la hace lo más grande posible sin deformarla ni recortarla. */
+.img-consola {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0.85;
+    transition: all 0.3s ease;
+}
+
+.tarjeta-puesto:hover .img-consola {
+    transform: scale(1.06);
+    opacity: 1;
+}
+
+/* Los estados van con .tarjeta-puesto delante para que solo afecten a las tarjetas de los PCs:
+   el dashboard también usa estado-libre / estado-ocupado en los contadores y ahí solo cambian el color del texto */
+
+/* --- ESTADO: LIBRE (LÍNEA VERDE NEÓN) --- */
+.tarjeta-puesto.estado-libre {
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-top: 3px solid var(--color-libre);
+    background: linear-gradient(180deg, rgba(0, 255, 136, 0.04) 0%, rgba(13, 17, 23, 1) 100%);
+    box-shadow: inset 0 10px 20px -10px rgba(0, 255, 136, 0.15);
+}
+
+.estado-libre .texto-estado {
+    color: var(--color-libre);
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+}
+
+/* El PC de la imagen proyecta brillo verde */
+.estado-libre .img-consola {
+    filter: drop-shadow(0 4px 6px rgba(0, 255, 136, 0.3));
+}
+
+.tarjeta-puesto.estado-libre:hover {
+    border-color: rgba(0, 255, 136, 0.6);
+    border-top-color: var(--color-libre);
+    box-shadow: 0 5px 20px rgba(0, 255, 136, 0.15), inset 0 10px 20px -10px rgba(0, 255, 136, 0.3);
+}
+
+.estado-libre:hover .img-consola {
+    filter: drop-shadow(0 6px 12px rgba(0, 255, 136, 0.6));
+}
+
+/* --- ESTADO: OCUPADO (LÍNEA ROJA NEÓN) --- */
+.tarjeta-puesto.estado-ocupado {
+    border: 1px solid rgba(255, 70, 85, 0.2);
+    border-top: 3px solid var(--color-ocupado);
+    background: linear-gradient(180deg, rgba(255, 70, 85, 0.04) 0%, rgba(13, 17, 23, 1) 100%);
+    box-shadow: inset 0 10px 20px -10px rgba(255, 70, 85, 0.15);
+}
+
+.estado-ocupado .texto-estado {
+    color: var(--color-ocupado);
+    text-shadow: 0 0 8px rgba(255, 70, 85, 0.6);
+}
+
+/* El PC de la imagen proyecta brillo rojo */
+.estado-ocupado .img-consola {
+    filter: drop-shadow(0 4px 6px rgba(255, 70, 85, 0.3));
+}
+
+.tarjeta-puesto.estado-ocupado:hover {
+    border-color: rgba(255, 70, 85, 0.6);
+    border-top-color: var(--color-ocupado);
+    box-shadow: 0 5px 20px rgba(255, 70, 85, 0.15), inset 0 10px 20px -10px rgba(255, 70, 85, 0.3);
+}
+
+.estado-ocupado:hover .img-consola {
+    filter: drop-shadow(0 6px 12px rgba(255, 70, 85, 0.6));
+}
+
+/* Pantallita del indicador, dibujada con un borde (verde o rojo según el estado) */
+.icono-pantalla {
+    width: 11px;
+    height: 8px;
+    border: 2px solid var(--color-libre);
+    border-radius: 2px;
+}
+
+.estado-ocupado .icono-pantalla {
+    border-color: var(--color-ocupado);
 }

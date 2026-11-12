@@ -3,6 +3,7 @@
 // Muestra los puestos de una sala agrupados por formato (Squad, Dúo y Solo).
 // Llega por GET el tipo de zona desde las tarjetas del dashboard (sala.php?tipo=pc)
 // y, si se ha elegido en el desplegable, también la sala (sala.php?tipo=pc&id_sala=3).
+// Al pulsar un PC se va a procs/cambiar_estado_proc.php, que lo ocupa o lo libera y vuelve aquí.
 
 session_start();
 
@@ -49,8 +50,8 @@ try {
         }
     }
 
-    // Puestos de la sala que se está viendo
-    $sql = "SELECT nombre, tipo, estado FROM modulos WHERE id_sala = ? ORDER BY nombre";
+    // Puestos de la sala. El id_modulo hace falta para el enlace que lo ocupa o lo libera.
+    $sql = "SELECT id_modulo, nombre, tipo, estado FROM modulos WHERE id_sala = ? ORDER BY nombre";
     $stmt = $conexion->prepare($sql);
     $stmt->execute([$sala_activa['id_sala']]);
     $modulos = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -66,12 +67,15 @@ $puestos_duo = [];
 $puestos_solo = [];
 
 foreach ($modulos as $modulo) {
+    // 'accion' es lo que pasará al pulsarlo; js/sala.js lo usa para la pregunta del SweetAlert
     if ($modulo['estado'] == 'lliure') {
         $modulo['clase_estado'] = 'estado-libre';
         $modulo['texto_estado'] = 'LIBRE';
+        $modulo['accion'] = 'Ocupar';
     } else {
         $modulo['clase_estado'] = 'estado-ocupado';
         $modulo['texto_estado'] = 'OCUPADO';
+        $modulo['accion'] = 'Liberar';
     }
 
     if ($modulo['tipo'] == 'squad') {
@@ -103,18 +107,19 @@ if (!empty($pareja)) {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title><?php echo $sala_activa['nombre']; ?> - Gaming Center</title>
+    <title><?php echo htmlspecialchars($sala_activa['nombre']); ?> - Gaming Center</title>
     <link rel="icon" type="image/png" href="../img/favicon.png">
     <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body>
+<body class="pagina-sala">
     <!-- La segunda clase (cabecera-pc, cabecera-consola o cabecera-vip) pinta la línea con el color de la sala -->
     <header class="cabecera cabecera-<?php echo $sala_activa['tipo']; ?>">
         <a href="dashboard.php" class="boton-volver">&lt; Volver</a>
 
-        <h1 class="cabecera-titulo"><?php echo $sala_activa['nombre']; ?></h1>
+        <h1 class="cabecera-titulo"><?php echo htmlspecialchars($sala_activa['nombre']); ?></h1>
 
-        <!-- Formulario por GET: solo sirve para navegar a otra sala, no modifica nada -->
+        <!-- Formulario por GET: solo sirve para navegar a otra sala, no modifica nada.
+             Se envía solo al cambiar el desplegable (lo hace js/sala.js). -->
         <form method="GET" action="sala.php" id="formulario-sala" class="selector-sala">
             <!-- Oculto: reenvía la zona para que al cambiar de sala no se pierda -->
             <input type="hidden" name="tipo" value="<?php echo $sala_activa['tipo']; ?>">
@@ -122,14 +127,22 @@ if (!empty($pareja)) {
             <select name="id_sala" id="id_sala">
                 <?php foreach ($salas as $sala) { ?>
                     <?php if ($sala['id_sala'] == $sala_activa['id_sala']) { ?>
-                        <option value="<?php echo $sala['id_sala']; ?>" selected><?php echo $sala['nombre']; ?></option>
+                        <option value="<?php echo $sala['id_sala']; ?>" selected><?php echo htmlspecialchars($sala['nombre']); ?></option>
                     <?php } else { ?>
-                        <option value="<?php echo $sala['id_sala']; ?>"><?php echo $sala['nombre']; ?></option>
+                        <option value="<?php echo $sala['id_sala']; ?>"><?php echo htmlspecialchars($sala['nombre']); ?></option>
                     <?php } ?>
                 <?php } ?>
             </select>
         </form>
     </header>
+
+    <?php
+    // Por ejemplo, si el proceso no encuentra el puesto que se ha pulsado
+    if (isset($_SESSION['error'])) {
+        echo "<div class='mensaje-aviso mensaje-aviso-error'>" . $_SESSION['error'] . "</div>";
+        unset($_SESSION['error']);
+    }
+    ?>
 
     <main class="vista-puestos">
         <?php if (empty($modulos)) { ?>
@@ -142,10 +155,17 @@ if (!empty($pareja)) {
                 <h3 class="titulo-formato">Arena Squad</h3>
                 <div class="lista-squad">
                     <?php foreach ($puestos_squad as $puesto) { ?>
-                        <div class="tarjeta-puesto <?php echo $puesto['clase_estado']; ?>">
-                            <span><?php echo $puesto['texto_estado']; ?></span>
-                            <span class="nombre-puesto"><?php echo $puesto['nombre']; ?></span>
-                        </div>
+                        <!-- Cada PC es un enlace al proceso que lo ocupa (si está libre) o lo libera (si está ocupado) -->
+                        <a href="../procs/cambiar_estado_proc.php?id_modulo=<?php echo $puesto['id_modulo']; ?>" title="<?php echo $puesto['accion'] . ' ' . htmlspecialchars($puesto['nombre']); ?>" class="tarjeta-puesto <?php echo $puesto['clase_estado']; ?>">
+                            <div class="indicador-estado">
+                                <span class="icono-pantalla"></span>
+                                <span class="texto-estado"><?php echo $puesto['texto_estado']; ?></span>
+                            </div>
+                            <div class="grafico-pc">
+                                <img src="../img/ordenador-sala1.png" alt="PC" class="img-consola">
+                            </div>
+                            <div class="nombre-puesto"><?php echo htmlspecialchars($puesto['nombre']); ?></div>
+                        </a>
                     <?php } ?>
                 </div>
             </section>
@@ -160,10 +180,16 @@ if (!empty($pareja)) {
                     <?php foreach ($parejas as $pareja) { ?>
                         <div class="caja-pareja">
                             <?php foreach ($pareja as $puesto) { ?>
-                                <div class="tarjeta-puesto <?php echo $puesto['clase_estado']; ?>">
-                                    <span><?php echo $puesto['texto_estado']; ?></span>
-                                    <span class="nombre-puesto"><?php echo $puesto['nombre']; ?></span>
-                                </div>
+                                <a href="../procs/cambiar_estado_proc.php?id_modulo=<?php echo $puesto['id_modulo']; ?>" title="<?php echo $puesto['accion'] . ' ' . htmlspecialchars($puesto['nombre']); ?>" class="tarjeta-puesto <?php echo $puesto['clase_estado']; ?>">
+                                    <div class="indicador-estado">
+                                        <span class="icono-pantalla"></span>
+                                        <span class="texto-estado"><?php echo $puesto['texto_estado']; ?></span>
+                                    </div>
+                                    <div class="grafico-pc">
+                                        <img src="../img/ordenador-sala1.png" alt="PC" class="img-consola">
+                                    </div>
+                                    <div class="nombre-puesto"><?php echo htmlspecialchars($puesto['nombre']); ?></div>
+                                </a>
                             <?php } ?>
                         </div>
                     <?php } ?>
@@ -177,16 +203,23 @@ if (!empty($pareja)) {
                 <h3 class="titulo-formato">Zona Solo</h3>
                 <div class="lista-solo">
                     <?php foreach ($puestos_solo as $puesto) { ?>
-                        <div class="tarjeta-puesto <?php echo $puesto['clase_estado']; ?>">
-                            <span><?php echo $puesto['texto_estado']; ?></span>
-                            <span class="nombre-puesto"><?php echo $puesto['nombre']; ?></span>
-                        </div>
+                        <a href="../procs/cambiar_estado_proc.php?id_modulo=<?php echo $puesto['id_modulo']; ?>" title="<?php echo $puesto['accion'] . ' ' . htmlspecialchars($puesto['nombre']); ?>" class="tarjeta-puesto <?php echo $puesto['clase_estado']; ?>">
+                            <div class="indicador-estado">
+                                <span class="icono-pantalla"></span>
+                                <span class="texto-estado"><?php echo $puesto['texto_estado']; ?></span>
+                            </div>
+                            <div class="grafico-pc">
+                                <img src="../img/ordenador-sala1.png" alt="PC" class="img-consola">
+                            </div>
+                            <div class="nombre-puesto"><?php echo htmlspecialchars($puesto['nombre']); ?></div>
+                        </a>
                     <?php } ?>
                 </div>
             </section>
         <?php } ?>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
     <script src="../js/sala.js"></script>
 </body>
 </html>
