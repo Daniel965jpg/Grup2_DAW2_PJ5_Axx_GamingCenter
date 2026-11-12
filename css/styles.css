@@ -359,17 +359,19 @@ body > .mensaje-aviso {
     margin-bottom: 6px;
 }
 
-/* Rejilla de 5 columnas iguales para squads y solos: así un PC solo mide lo mismo que uno del squad.
-   Si hay más de 5, bajan a otra fila. grid-auto-rows: minmax(0, 1fr) reparte el alto del bloque
-   a partes iguales entre las filas que haya (y deja que sean pequeñas si hace falta). */
+/* Rejilla de 5 columnas iguales para squads y solos.
+   El problema estaba en que grid-auto-rows: minmax(0,1fr) dejaba que cada fila se estirara
+   al alto disponible y los PCs se hacían demasiado altos. Aquí se fija un mínimo y se recorta
+   el crecimiento para que los puestos mantengan una altura razonable. */
 .lista-squad,
 .lista-solo {
     flex: 1;
     min-height: 0;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-auto-rows: minmax(0, 1fr);
+    grid-template-columns: repeat(5, minmax(120px, 1fr));
+    grid-auto-rows: minmax(180px, 1fr);
     gap: 16px;
+    align-items: stretch;
 }
 
 /* Dúos: dos cajas por fila, y dentro de cada caja sus dos PCs a partes iguales */
@@ -378,7 +380,7 @@ body > .mensaje-aviso {
     min-height: 0;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: minmax(0, 1fr);
+    grid-auto-rows: minmax(180px, 1fr);
     gap: 24px;
 }
 
@@ -517,8 +519,9 @@ body > .mensaje-aviso {
     align-items: center;
     justify-content: space-between;
     background-color: #0d1117;
-    /* Sin ancho ni alto fijos: la tarjeta ocupa toda su casilla de la rejilla */
-    min-height: 0;
+    /* La altura la controla la rejilla; si no se limita, la tarjeta se estira al alto total del bloque */
+    height: 100%;
+    min-height: 180px;
     padding: 8px;
     border-radius: 8px;
     text-decoration: none;
@@ -549,19 +552,20 @@ body > .mensaje-aviso {
 
 /* Hueco para la imagen: todo lo que sobra entre el estado y el nombre (flex: 1) */
 .grafico-pc {
-    flex: 1;
-    min-height: 0;
     position: relative;
     width: 100%;
+    flex: 1 1 auto;
+    min-height: 90px;
+    max-height: 220px;
     margin: 4px 0;
 }
 
-/* La imagen se coloca encima de ese hueco y lo rellena entero (position: absolute + inset: 0),
-   así no empuja la tarjeta: es ella la que se adapta al tamaño de la tarjeta y no al revés.
-   object-fit: contain la hace lo más grande posible sin deformarla ni recortarla. */
+/* La imagen debe ocupar un espacio limitado; si se deja absoluta con height:100% sobre una tarjeta
+   muy alta, hace que el PC parezca enorme. Aquí la imagen se ajusta al contenido disponible y
+   no estira la celda de la rejilla. */
 .img-consola {
-    position: absolute;
-    inset: 0;
+    position: relative;
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: contain;
