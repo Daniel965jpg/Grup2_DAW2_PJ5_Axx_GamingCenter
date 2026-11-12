@@ -364,7 +364,8 @@ body > .mensaje-aviso {
    al alto disponible y los PCs se hacían demasiado altos. Aquí se fija un mínimo y se recorta
    el crecimiento para que los puestos mantengan una altura razonable. */
 .lista-squad,
-.lista-solo {
+.lista-solo,
+.lista-party {
     flex: 1;
     min-height: 0;
     display: grid;

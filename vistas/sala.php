@@ -60,11 +60,24 @@ try {
     die();
 }
 
+// Cada tipo de sala usa su imagen correspondiente.
+if ($sala_activa['tipo'] == 'vip') {
+    $imagen_puesto = '../img/logo_vip.png';
+    $alt_puesto = 'Sala VIP';
+} elseif ($sala_activa['tipo'] == 'consola') {
+    $imagen_puesto = '../img/consola-sala.png';
+    $alt_puesto = 'Consola';
+} else {
+    $imagen_puesto = '../img/ordenador-sala1.png';
+    $alt_puesto = 'PC';
+}
+
 // Repartimos los puestos en tres listas según su formato, para pintar cada bloque por separado.
 // De paso dejamos preparada la clase CSS y el texto del estado, así el HTML solo tiene que hacer echo.
 $puestos_squad = [];
 $puestos_duo = [];
 $puestos_solo = [];
+$puestos_party = [];
 
 foreach ($modulos as $modulo) {
     // 'accion' es lo que pasará al pulsarlo; js/sala.js lo usa para la pregunta del SweetAlert
@@ -84,6 +97,8 @@ foreach ($modulos as $modulo) {
         $puestos_duo[] = $modulo;
     } elseif ($modulo['tipo'] == 'solo') {
         $puestos_solo[] = $modulo;
+    } elseif ($modulo['tipo'] == 'party') {
+        $puestos_party[] = $modulo;
     }
 }
 
@@ -162,7 +177,7 @@ if (!empty($pareja)) {
                                 <span class="texto-estado"><?php echo $puesto['texto_estado']; ?></span>
                             </div>
                             <div class="grafico-pc">
-                                <img src="../img/ordenador-sala1.png" alt="PC" class="img-consola">
+                                <img src="<?php echo $imagen_puesto; ?>" alt="<?php echo $alt_puesto; ?>" class="img-consola">
                             </div>
                             <div class="nombre-puesto"><?php echo htmlspecialchars($puesto['nombre']); ?></div>
                         </a>
@@ -170,7 +185,26 @@ if (!empty($pareja)) {
                 </div>
             </section>
         <?php } ?>
-
+        <!-- BLOQUE PARTY (consolas de sofá) -->
+        <?php if (!empty($puestos_party)) { ?>
+            <section class="grupo-formato">
+                <h3 class="titulo-formato">Zona Party</h3>
+                <div class="lista-party">
+                    <?php foreach ($puestos_party as $puesto) { ?>
+                        <a href="../procs/cambiar_estado_proc.php?id_modulo=<?php echo $puesto['id_modulo']; ?>" title="<?php echo $puesto['accion'] . ' ' . htmlspecialchars($puesto['nombre']); ?>" class="tarjeta-puesto <?php echo $puesto['clase_estado']; ?>">
+                            <div class="indicador-estado">
+                                <span class="icono-pantalla"></span>
+                                <span class="texto-estado"><?php echo $puesto['texto_estado']; ?></span>
+                            </div>
+                            <div class="grafico-pc">
+                                <img src="<?php echo $imagen_puesto; ?>" alt="<?php echo $alt_puesto; ?>" class="img-consola">
+                            </div>
+                            <div class="nombre-puesto"><?php echo htmlspecialchars($puesto['nombre']); ?></div>
+                        </a>
+                    <?php } ?>
+                </div>
+            </section>
+        <?php } ?>
         <!-- BLOQUE 2: DÚOS -->
         <?php if (!empty($parejas)) { ?>
             <section class="grupo-formato">
@@ -186,7 +220,7 @@ if (!empty($pareja)) {
                                         <span class="texto-estado"><?php echo $puesto['texto_estado']; ?></span>
                                     </div>
                                     <div class="grafico-pc">
-                                        <img src="../img/ordenador-sala1.png" alt="PC" class="img-consola">
+                                        <img src="<?php echo $imagen_puesto; ?>" alt="<?php echo $alt_puesto; ?>" class="img-consola">
                                     </div>
                                     <div class="nombre-puesto"><?php echo htmlspecialchars($puesto['nombre']); ?></div>
                                 </a>
@@ -209,7 +243,7 @@ if (!empty($pareja)) {
                                 <span class="texto-estado"><?php echo $puesto['texto_estado']; ?></span>
                             </div>
                             <div class="grafico-pc">
-                                <img src="../img/ordenador-sala1.png" alt="PC" class="img-consola">
+                                <img src="<?php echo $imagen_puesto; ?>" alt="<?php echo $alt_puesto; ?>" class="img-consola">
                             </div>
                             <div class="nombre-puesto"><?php echo htmlspecialchars($puesto['nombre']); ?></div>
                         </a>

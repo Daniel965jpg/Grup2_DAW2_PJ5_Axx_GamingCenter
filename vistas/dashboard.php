@@ -13,7 +13,6 @@ if (!isset($_SESSION['usuario'])) {
 
 require_once '../bd/conexion.php';
 
-//Recoger variable de sesión de login
 $mi_id = $_SESSION['usuario'];
 
 try {
