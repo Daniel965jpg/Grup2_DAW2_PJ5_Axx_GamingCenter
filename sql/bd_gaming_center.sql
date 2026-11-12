@@ -77,6 +77,87 @@ INSERT INTO modulos (id_sala, nombre, tipo, capacidad, estado) VALUES
 (1, 'PC-10', 'solo', 1, 'lliure'),
 (1, 'PC-11', 'solo', 1, 'lliure');
 
+
+ALTER TABLE usuarios ENGINE=InnoDB;
+ALTER TABLE salas ENGINE=InnoDB;
+ALTER TABLE modulos ENGINE=InnoDB;
+ALTER TABLE ocupaciones ENGINE=InnoDB;  
+
+-- ========================================================================
+-- 1. LIMPIEZA DE PUESTOS DE PRUEBA (SALA 1)
+-- Borramos los PCs de prueba de la Sala 1 para que no se dupliquen con la Sala 2
+-- ========================================================================
+DELETE FROM modulos 
+WHERE id_sala = 1 AND nombre IN ('PC-10', 'PC-11');
+
+
+-- ========================================================================
+-- 2. INSERTS DE LA SALA 2: PC STANDARD (id_sala = 2)
+-- Distribución: 1 Arena Squad (5 puestos) y 2 Dúos (4 puestos)
+-- Total: 9 ordenadores (del PC-10 al PC-18)
+-- ========================================================================
+INSERT INTO modulos (id_sala, nombre, tipo, capacidad, estado) VALUES 
+-- Módulo 2.1: Arena Squad (5 puestos)
+(2, 'PC-10', 'squad', 1, 'lliure'),
+(2, 'PC-11', 'squad', 1, 'lliure'),
+(2, 'PC-12', 'squad', 1, 'lliure'),
+(2, 'PC-13', 'squad', 1, 'lliure'),
+(2, 'PC-14', 'squad', 1, 'lliure'),
+
+-- Módulos 2.2 y 2.3: Zona Dúo (2 parejas = 4 puestos)
+(2, 'PC-15', 'duo', 1, 'lliure'),
+(2, 'PC-16', 'duo', 1, 'lliure'),
+(2, 'PC-17', 'duo', 1, 'lliure'),
+(2, 'PC-18', 'duo', 1, 'lliure');
+
+
+-- ========================================================================
+-- 3. INSERTS DE LA SALA 3: PC STANDARD (id_sala = 3)
+-- Distribución: 1 Arena Squad (5 puestos), 2 Dúos (4 puestos) y 2 Solos (2 puestos)
+-- Total: 11 ordenadores (del PC-19 al PC-29)
+-- ========================================================================
+INSERT INTO modulos (id_sala, nombre, tipo, capacidad, estado) VALUES 
+-- Módulo 3.1: Arena Squad (5 puestos)
+(3, 'PC-19', 'squad', 1, 'lliure'),
+(3, 'PC-20', 'squad', 1, 'lliure'),
+(3, 'PC-21', 'squad', 1, 'lliure'),
+(3, 'PC-22', 'squad', 1, 'lliure'),
+(3, 'PC-23', 'squad', 1, 'lliure'),
+
+-- Módulos 3.2 y 3.3: Zona Dúo (2 parejas = 4 puestos)
+(3, 'PC-24', 'duo', 1, 'lliure'),
+(3, 'PC-25', 'duo', 1, 'lliure'),
+(3, 'PC-26', 'duo', 1, 'lliure'),
+(3, 'PC-27', 'duo', 1, 'lliure'),
+
+-- Módulos 3.4 y 3.5: Zona Solo (2 puestos)
+(3, 'PC-28', 'solo', 1, 'lliure'),
+(3, 'PC-29', 'solo', 1, 'lliure');
+
+
+-- ========================================================================
+-- 4. INSERTS DE LA SALA 4: PC STANDARD (id_sala = 4)
+-- Distribución: 1 Arena Squad (5 puestos), 2 Dúos (4 puestos) y 2 Solos (2 puestos)
+-- Total: 11 ordenadores (del PC-30 al PC-40)
+-- ========================================================================
+INSERT INTO modulos (id_sala, nombre, tipo, capacidad, estado) VALUES 
+-- Módulo 4.1: Arena Squad (5 puestos)
+(4, 'PC-30', 'squad', 1, 'lliure'),
+(4, 'PC-31', 'squad', 1, 'lliure'),
+(4, 'PC-32', 'squad', 1, 'lliure'),
+(4, 'PC-33', 'squad', 1, 'lliure'),
+(4, 'PC-34', 'squad', 1, 'lliure'),
+
+-- Módulos 4.2 y 4.3: Zona Dúo (2 parejas = 4 puestos)
+(4, 'PC-35', 'duo', 1, 'lliure'),
+(4, 'PC-36', 'duo', 1, 'lliure'),
+(4, 'PC-37', 'duo', 1, 'lliure'),
+(4, 'PC-38', 'duo', 1, 'lliure'),
+
+-- Módulos 4.4 y 4.5: Zona Solo (2 puestos)
+(4, 'PC-39', 'solo', 1, 'lliure'),
+(4, 'PC-40', 'solo', 1, 'lliure');
+
 -- Salas de consolas / simuladores
 INSERT INTO salas (nombre, tipo) VALUES
 ('SALA 5: CONSOLE ZONE', 'consola'),
