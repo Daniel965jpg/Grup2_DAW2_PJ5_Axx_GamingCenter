@@ -1,4 +1,9 @@
 <?php
+// PROCESO: CAMBIAR ESTADO DE UN PUESTO (OCUPAR / LIBERAR)
+// Se llama desde el enlace de cada puesto en vistas/sala.php y vistas/ocupados.php
+// (cambiar_estado_proc.php?id_modulo=5). Si está libre lo ocupa y si está ocupado lo libera.
+// Es un proceso intermedio por GET, como eliminar_pedido.php en clase: las vistas no pueden hacer UPDATE.
+// Cualquier gamemaster puede liberar un puesto, lo haya ocupado él o un compañero.
 
 session_start();
 
@@ -19,45 +24,44 @@ $mi_id = $_SESSION['usuario'];
 $id_modulo = limpiarDato($_GET['id_modulo']);
 
 try {
-    // Leer el estado con bloqueo para que dos gamemasters no cambien el mismo puesto a la vez.
-    $conexion->beginTransaction();
+    // Estado actual del puesto y la sala a la que pertenece (para volver después a ella).
+    // El nuevo estado lo decidimos aquí con lo que hay en la BD, no con lo que venga en la URL.
     $sql = "SELECT modulos.estado, salas.id_sala, salas.tipo
             FROM modulos
             JOIN salas ON modulos.id_sala = salas.id_sala
-            WHERE modulos.id_modulo = ?
-            FOR UPDATE";
+            WHERE modulos.id_modulo = ?";
     $stmt = $conexion->prepare($sql);
     $stmt->execute([$id_modulo]);
     $puesto = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Error al buscar el puesto: " . $e->getMessage();
+    die();
+}
 
-    // Si alguien escribe a mano un id que no existe
-    if (!$puesto) {
-        $conexion->rollBack();
-        $_SESSION['error'] = 'El puesto que has pulsado no existe.';
-        header('Location: ../vistas/dashboard.php');
-        exit();
-    }
+// Si alguien escribe a mano un id que no existe
+if (!$puesto) {
+    $_SESSION['error'] = 'El puesto que has pulsado no existe.';
+    header('Location: ../vistas/dashboard.php');
+    exit();
+}
+
+// Son dos modificaciones encadenadas (el estado del puesto y el registro en ocupaciones),
+// así que van en una transacción: o se hacen las dos o ninguna.
+try {
+    $conexion->beginTransaction();
 
     if ($puesto['estado'] == 'lliure') {
-        // OCUPAR: el PC pasa a ocupado y se apunta quién lo ha ocupado y cuándo empieza
+        // OCUPAR: el puesto pasa a ocupado y se apunta quién lo ha ocupado y cuándo empieza
         $stmt1 = $conexion->prepare("UPDATE modulos SET estado = 'ocupat' WHERE id_modulo = ?");
         $stmt1->execute([$id_modulo]);
 
-        $stmt2 = $conexion->prepare("INSERT INTO ocupaciones (id_modulo, id_usuario) VALUES (?, ?)");
+        $stmt2 = $conexion->prepare("INSERT INTO ocupaciones (id_modulo, id_usuario, fecha_inicio) VALUES (?, ?, NOW())");
         $stmt2->execute([$id_modulo, $mi_id]);
     } else {
-        // Solo puede liberar el gamemaster responsable de la ocupación abierta.
-        $stmt2 = $conexion->prepare("UPDATE ocupaciones
-                                     SET fecha_fin = NOW()
-                                     WHERE id_modulo = ? AND id_usuario = ? AND fecha_fin IS NULL");
-        $stmt2->execute([$id_modulo, $mi_id]);
-
-        if ($stmt2->rowCount() !== 1) {
-            $conexion->rollBack();
-            $_SESSION['error'] = 'Solo el gamemaster que ocupó este módulo puede liberarlo.';
-            header('Location: ../vistas/sala.php?tipo=' . $puesto['tipo'] . '&id_sala=' . $puesto['id_sala']);
-            exit();
-        }
+        // LIBERAR: se cierra la ocupación que estaba abierta (fecha_fin vacía).
+        // No filtramos por id_usuario a propósito: así cualquier gamemaster puede cerrarla.
+        $stmt2 = $conexion->prepare("UPDATE ocupaciones SET fecha_fin = NOW() WHERE id_modulo = ? AND fecha_fin IS NULL");
+        $stmt2->execute([$id_modulo]);
 
         $stmt1 = $conexion->prepare("UPDATE modulos SET estado = 'lliure' WHERE id_modulo = ?");
         $stmt1->execute([$id_modulo]);
@@ -65,14 +69,18 @@ try {
 
     $conexion->commit();
 } catch (PDOException $e) {
-    if ($conexion->inTransaction()) {
-        $conexion->rollBack();
-    }
+    $conexion->rollBack();
     echo "Error al cambiar el estado del puesto: " . $e->getMessage();
     die();
 }
 
-// Volvemos a la misma sala. Al redirigir, si se pulsa F5 no se vuelve a cambiar el estado.
+// Volvemos a la página desde la que se ha pulsado. Al redirigir, si se pulsa F5 no se repite el cambio.
+// Desde ocupados.php el enlace lleva &desde=ocupados; si no, venimos de la sala.
+if (isset($_GET['desde']) && $_GET['desde'] == 'ocupados') {
+    header('Location: ../vistas/ocupados.php');
+    exit();
+}
+
 header('Location: ../vistas/sala.php?tipo=' . $puesto['tipo'] . '&id_sala=' . $puesto['id_sala']);
 exit();
 ?>

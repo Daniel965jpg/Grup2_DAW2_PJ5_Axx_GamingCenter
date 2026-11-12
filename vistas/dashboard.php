@@ -59,6 +59,8 @@ try {
             <p class="cabecera-bienvenida">Bienvenido, <?php echo $usuario['nom_real']; ?>. Selecciona una zona para gestionar la ocupación de las salas.</p>
         </div>
         <div class="cabecera-usuario">
+            <!-- Lista de todos los puestos ocupados del local, para liberarlos desde un solo sitio -->
+            <a href="ocupados.php" class="boton-cabecera">Ver Ocupados</a>
             <span><?php echo $usuario['nom_real']; ?> (<?php echo $usuario['rol']; ?>)</span>
             <a href="../procs/logout.php" class="boton-salir">Cerrar sesión</a>
         </div>

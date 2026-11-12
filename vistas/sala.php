@@ -60,18 +60,6 @@ try {
     die();
 }
 
-// Cada tipo de sala usa su imagen correspondiente.
-if ($sala_activa['tipo'] == 'vip') {
-    $imagen_puesto = '../img/logo_vip.png';
-    $alt_puesto = 'Sala VIP';
-} elseif ($sala_activa['tipo'] == 'consola') {
-    $imagen_puesto = '../img/consola-sala.png';
-    $alt_puesto = 'Consola';
-} else {
-    $imagen_puesto = '../img/ordenador-sala1.png';
-    $alt_puesto = 'PC';
-}
-
 // Repartimos los puestos en tres listas según su formato, para pintar cada bloque por separado.
 // De paso dejamos preparada la clase CSS y el texto del estado, así el HTML solo tiene que hacer echo.
 $puestos_squad = [];
@@ -90,6 +78,9 @@ foreach ($modulos as $modulo) {
         $modulo['texto_estado'] = 'OCUPADO';
         $modulo['accion'] = 'Liberar';
     }
+
+    // Cada puesto lleva su imagen: los SIM un simulador, los VR unas gafas y el resto la de su tipo de sala
+    $modulo['imagen'] = imagenPuesto($modulo['nombre'], $sala_activa['tipo']);
 
     if ($modulo['tipo'] == 'squad') {
         $puestos_squad[] = $modulo;
@@ -133,6 +124,10 @@ if (!empty($pareja)) {
 
         <h1 class="cabecera-titulo"><?php echo htmlspecialchars($sala_activa['nombre']); ?></h1>
 
+        <div class="cabecera-acciones">
+        <!-- Historial ya filtrado por esta sala -->
+        <a href="historico.php?id_sala=<?php echo $sala_activa['id_sala']; ?>" class="boton-cabecera">Historial de Sala</a>
+
         <!-- Formulario por GET: solo sirve para navegar a otra sala, no modifica nada.
              Se envía solo al cambiar el desplegable (lo hace js/sala.js). -->
         <form method="GET" action="sala.php" id="formulario-sala" class="selector-sala">
@@ -149,6 +144,7 @@ if (!empty($pareja)) {
                 <?php } ?>
             </select>
         </form>
+        </div>
     </header>
 
     <?php
@@ -177,7 +173,7 @@ if (!empty($pareja)) {
                                 <span class="texto-estado"><?php echo $puesto['texto_estado']; ?></span>
                             </div>
                             <div class="grafico-pc">
-                                <img src="<?php echo $imagen_puesto; ?>" alt="<?php echo $alt_puesto; ?>" class="img-consola">
+                                <img src="<?php echo $puesto['imagen']; ?>" alt="<?php echo htmlspecialchars($puesto['nombre']); ?>" class="img-consola">
                             </div>
                             <div class="nombre-puesto"><?php echo htmlspecialchars($puesto['nombre']); ?></div>
                         </a>
@@ -197,7 +193,7 @@ if (!empty($pareja)) {
                                 <span class="texto-estado"><?php echo $puesto['texto_estado']; ?></span>
                             </div>
                             <div class="grafico-pc">
-                                <img src="<?php echo $imagen_puesto; ?>" alt="<?php echo $alt_puesto; ?>" class="img-consola">
+                                <img src="<?php echo $puesto['imagen']; ?>" alt="<?php echo htmlspecialchars($puesto['nombre']); ?>" class="img-consola">
                             </div>
                             <div class="nombre-puesto"><?php echo htmlspecialchars($puesto['nombre']); ?></div>
                         </a>
@@ -220,7 +216,7 @@ if (!empty($pareja)) {
                                         <span class="texto-estado"><?php echo $puesto['texto_estado']; ?></span>
                                     </div>
                                     <div class="grafico-pc">
-                                        <img src="<?php echo $imagen_puesto; ?>" alt="<?php echo $alt_puesto; ?>" class="img-consola">
+                                        <img src="<?php echo $puesto['imagen']; ?>" alt="<?php echo htmlspecialchars($puesto['nombre']); ?>" class="img-consola">
                                     </div>
                                     <div class="nombre-puesto"><?php echo htmlspecialchars($puesto['nombre']); ?></div>
                                 </a>
@@ -243,7 +239,7 @@ if (!empty($pareja)) {
                                 <span class="texto-estado"><?php echo $puesto['texto_estado']; ?></span>
                             </div>
                             <div class="grafico-pc">
-                                <img src="<?php echo $imagen_puesto; ?>" alt="<?php echo $alt_puesto; ?>" class="img-consola">
+                                <img src="<?php echo $puesto['imagen']; ?>" alt="<?php echo htmlspecialchars($puesto['nombre']); ?>" class="img-consola">
                             </div>
                             <div class="nombre-puesto"><?php echo htmlspecialchars($puesto['nombre']); ?></div>
                         </a>
@@ -254,6 +250,7 @@ if (!empty($pareja)) {
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+    <script src="../js/confirmar.js"></script>
     <script src="../js/sala.js"></script>
 </body>
 </html>

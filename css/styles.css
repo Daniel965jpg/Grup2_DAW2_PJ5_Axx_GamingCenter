@@ -763,3 +763,116 @@ body > .mensaje-aviso {
 .estado-ocupado .icono-pantalla {
     border-color: var(--color-ocupado);
 }
+
+/* ---------- BOTONES DE CABECERA (Ver Ocupados, Historial de Sala...) ---------- */
+
+.boton-cabecera {
+    padding: 8px 14px;
+    border: 1px solid var(--color-pc);
+    border-radius: 8px;
+    color: var(--color-pc);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.boton-cabecera:hover {
+    background-color: var(--color-pc);
+    color: var(--bg-principal);
+}
+
+/* En sala.php el botón de historial y el desplegable van juntos a la derecha */
+.cabecera-acciones {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* ---------- HISTORIAL: formulario de filtros ---------- */
+
+.filtros-historial {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+    background-color: var(--bg-tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+}
+
+.filtro {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filtro label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--texto-secundario);
+}
+
+.filtro select,
+.filtro input {
+    padding: 8px 12px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    color: var(--texto);
+    /* Para que el calendario del input date salga en oscuro */
+    color-scheme: dark;
+}
+
+.filtro-botones {
+    display: flex;
+    gap: 10px;
+}
+
+.boton-filtrar,
+.boton-limpiar {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.boton-filtrar {
+    background-color: var(--color-pc);
+    border: 1px solid var(--color-pc);
+    color: var(--bg-principal);
+    font-weight: bold;
+}
+
+.boton-limpiar {
+    background-color: transparent;
+    border: 1px solid var(--borde);
+    color: var(--texto-secundario);
+}
+
+/* ---------- OCUPADOS ---------- */
+
+.vista-ocupados {
+    padding: 24px;
+}
+
+/* Aquí la página sí puede hacer scroll (puede haber muchos ocupados),
+   así que las tarjetas llevan un alto fijo para que la imagen tenga hueco */
+.lista-ocupados {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.lista-ocupados .tarjeta-puesto {
+    height: 220px;
+}
+
+.sala-puesto {
+    font-size: 0.7rem;
+    color: var(--texto-secundario);
+    text-align: center;
+}
