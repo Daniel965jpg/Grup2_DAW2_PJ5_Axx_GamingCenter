@@ -60,8 +60,11 @@ try {
     die();
 }
 
-// Los PC y las consolas usan imágenes distintas
-if ($sala_activa['tipo'] == 'consola') {
+// Cada tipo de sala usa su imagen correspondiente.
+if ($sala_activa['tipo'] == 'vip') {
+    $imagen_puesto = '../img/logo_vip.png';
+    $alt_puesto = 'Sala VIP';
+} elseif ($sala_activa['tipo'] == 'consola') {
     $imagen_puesto = '../img/consola-sala.png';
     $alt_puesto = 'Consola';
 } else {
