@@ -513,6 +513,120 @@ body > .mensaje-aviso {
     --neon-suave: rgba(230, 237, 243, 0.15);
 }
 
+/* ---------- HISTORIAL GLOBAL ---------- */
+
+.pagina-historico {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.cabecera-historico {
+    border-bottom: 2px solid var(--texto);
+}
+
+.contenido-historico {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 28px 24px;
+}
+
+.panel-historico {
+    overflow: hidden;
+    background-color: var(--bg-tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+}
+
+.cabecera-historico-tabla {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.cabecera-historico-tabla h2 {
+    font-size: 1.1rem;
+}
+
+.cabecera-historico-tabla > span,
+.usuario-historico {
+    color: var(--texto-secundario);
+    font-size: 0.85rem;
+}
+
+.tabla-historico-contenedor {
+    overflow-x: auto;
+}
+
+.tabla-historico {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.tabla-historico th,
+.tabla-historico td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.tabla-historico th {
+    color: var(--color-pc);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.tabla-historico tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.tabla-historico tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.usuario-historico {
+    display: block;
+    margin-top: 3px;
+    color: var(--texto-secundario);
+}
+
+.panel-historico > .mensaje-vacio {
+    padding: 24px;
+}
+
+@media (max-width: 700px) {
+    .cabecera-historico {
+        align-items: flex-start;
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .cabecera-historico .cabecera-titulo {
+        margin-top: 10px;
+        font-size: 1.1rem;
+    }
+
+    .cabecera-historico .cabecera-bienvenida {
+        font-size: 0.8rem;
+    }
+
+    .contenido-historico {
+        padding: 18px 12px;
+    }
+
+    .tabla-historico th,
+    .tabla-historico td {
+        padding: 12px;
+    }
+}
+
 .tarjeta-puesto {
     display: flex;
     flex-direction: column;
