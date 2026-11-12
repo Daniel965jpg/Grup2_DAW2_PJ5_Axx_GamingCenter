@@ -44,10 +44,10 @@ CREATE TABLE ocupaciones (
 
 INSERT INTO usuarios (username, password, nom_real, cognom_real, rol) VALUES
 ('admin', '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Admin', 'Global', 'admin'),
-('izan',  '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Izan', 'Apellido', 'gamemaster'),
-('hao',   '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Hao', 'Apellido', 'gamemaster'),
-('enric', '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Enric', 'Apellido', 'gamemaster'),
-('dani',  '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Dani', 'Apellido', 'gamemaster');
+('izan',  '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Izan', 'Naranjo', 'gamemaster'),
+('hao',   '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Hao', 'Xiang', 'gamemaster'),
+('enric', '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Enric', 'Venanci', 'gamemaster'),
+('dani',  '$2y$10$GEMxzSEDQlhZwZY0S0sCZuLrD7/5cGiLNyj.FwRLf.7lKe06HoScO', 'Dani', 'Mayorov', 'gamemaster');
 
 
 -- 1. Creamos las salas de PC (asegúrate de que los IDs coincidan con tu tabla)
@@ -76,6 +76,51 @@ INSERT INTO modulos (id_sala, nombre, tipo, capacidad, estado) VALUES
 -- (Opcional) Si quieres añadir un par de Solos para probar la isleta de Solos
 (1, 'PC-10', 'solo', 1, 'lliure'),
 (1, 'PC-11', 'solo', 1, 'lliure');
+
+-- Salas de consolas / simuladores
+INSERT INTO salas (nombre, tipo) VALUES
+('SALA 5: CONSOLE ZONE', 'consola'),
+('SALA 6: VR', 'consola'),
+('SALA 7: SIMULADORES', 'consola');
+
+-- SALA 5: Party (sofás, 4 jugadores), Dúo (2 jugadores) y Solo
+INSERT INTO modulos (id_sala, nombre, tipo, capacidad, estado) VALUES
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 5: CONSOLE ZONE'), 'MND-01', 'party', 4, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 5: CONSOLE ZONE'), 'MND-02', 'party', 4, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 5: CONSOLE ZONE'), 'MND-03', 'party', 4, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 5: CONSOLE ZONE'), 'MND-04', 'party', 4, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 5: CONSOLE ZONE'), 'SIM-01', 'duo', 2, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 5: CONSOLE ZONE'), 'SIM-02', 'duo', 2, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 5: CONSOLE ZONE'), 'SIM-03', 'duo', 2, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 5: CONSOLE ZONE'), 'SIM-04', 'duo', 2, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 5: CONSOLE ZONE'), 'SIM-05', 'solo', 1, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 5: CONSOLE ZONE'), 'SIM-06', 'solo', 1, 'lliure');
+
+-- SALA 6: VR (todos solo)
+INSERT INTO modulos (id_sala, nombre, tipo, capacidad, estado) VALUES
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 6: VR'), 'MND-05', 'party', 4, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 6: VR'), 'MND-06', 'party', 4, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 6: VR'), 'MND-07', 'party', 4, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 6: VR'), 'MND-08', 'party', 4, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 6: VR'), 'VR-01', 'duo', 2, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 6: VR'), 'VR-02', 'duo', 2, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 6: VR'), 'VR-03', 'duo', 2, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 6: VR'), 'VR-04', 'duo', 2, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 6: VR'), 'VR-05', 'solo', 1, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 6: VR'), 'VR-06', 'solo', 1, 'lliure');
+
+-- SALA 7: Simuladores/Consolas (todos solo)
+INSERT INTO modulos (id_sala, nombre, tipo, capacidad, estado) VALUES
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 7: SIMULADORES'), 'MND-09', 'party', 4, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 7: SIMULADORES'), 'MND-10', 'party', 4, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 7: SIMULADORES'), 'MND-11', 'party', 4, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 7: SIMULADORES'), 'MND-12', 'party', 4, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 7: SIMULADORES'), 'SIM-07', 'duo', 2, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 7: SIMULADORES'), 'SIM-08', 'duo', 2, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 7: SIMULADORES'), 'SIM-09', 'duo', 2, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 7: SIMULADORES'), 'SIM-10', 'duo', 2, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 7: SIMULADORES'), 'SIM-11', 'solo', 1, 'lliure'),
+((SELECT id_sala FROM salas WHERE nombre = 'SALA 7: SIMULADORES'), 'SIM-12', 'solo', 1, 'lliure');
 
 
 ALTER TABLE usuarios ENGINE=InnoDB;
