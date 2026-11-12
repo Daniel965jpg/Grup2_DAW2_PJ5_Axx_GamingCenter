@@ -134,12 +134,6 @@ INSERT INTO modulos (id_sala, nombre, tipo, capacidad, estado) VALUES
 (3, 'PC-28', 'solo', 1, 'lliure'),
 (3, 'PC-29', 'solo', 1, 'lliure');
 
-
--- ========================================================================
--- 4. INSERTS DE LA SALA 4: PC STANDARD (id_sala = 4)
--- Distribución: 1 Arena Squad (5 puestos), 2 Dúos (4 puestos) y 2 Solos (2 puestos)
--- Total: 11 ordenadores (del PC-30 al PC-40)
--- ========================================================================
 INSERT INTO modulos (id_sala, nombre, tipo, capacidad, estado) VALUES 
 -- Módulo 4.1: Arena Squad (5 puestos)
 (4, 'PC-30', 'squad', 1, 'lliure'),
@@ -211,31 +205,28 @@ INSERT INTO salas (nombre, tipo) VALUES
 
 -- SALA 8 VIP: 5 puestos squad, 2 parejas duo y 2 puestos solo
 INSERT INTO modulos (id_sala, nombre, tipo, capacidad, estado) VALUES
-(8, 'VIP-01', 'squad', 3, 'lliure'),
-(8, 'VIP-02', 'squad', 3, 'lliure'),
-(8, 'VIP-03', 'squad', 3, 'lliure'),
-(8, 'VIP-04', 'squad', 3, 'lliure'),
-(8, 'VIP-05', 'squad', 3, 'lliure'),
-(8, 'VIP-06', 'duo', 3, 'lliure'),
-(8, 'VIP-07', 'duo', 3, 'lliure'),
-(8, 'VIP-08', 'duo', 3, 'lliure'),
-(8, 'VIP-09', 'duo', 3, 'lliure'),
-(8, 'VIP-10', 'solo', 3, 'lliure'),
-(8, 'VIP-11', 'solo', 3, 'lliure');
+(8, 'VIP-01', 'squad', 5, 'lliure'),
+(8, 'VIP-02', 'squad', 5, 'lliure'),
+(8, 'VIP-03', 'squad', 5, 'lliure'),
+(8, 'VIP-04', 'squad', 5, 'lliure'),
+(8, 'VIP-05', 'squad', 5, 'lliure'),
+(8, 'VIP-06', 'duo', 2, 'lliure'),
+(8, 'VIP-07', 'duo', 2, 'lliure'),
+(8, 'VIP-08', 'duo', 2, 'lliure'),
+(8, 'VIP-09', 'duo', 2, 'lliure');
+
 
 -- SALA 9 VIP: 5 puestos squad, 2 parejas duo y 2 puestos solo
 INSERT INTO modulos (id_sala, nombre, tipo, capacidad, estado) VALUES
-(9, 'VIP-12', 'squad', 3, 'lliure'),
-(9, 'VIP-13', 'squad', 3, 'lliure'),
-(9, 'VIP-14', 'squad', 3, 'lliure'),
-(9, 'VIP-15', 'squad', 3, 'lliure'),
-(9, 'VIP-16', 'squad', 3, 'lliure'),
-(9, 'VIP-17', 'duo', 3, 'lliure'),
-(9, 'VIP-18', 'duo', 3, 'lliure'),
-(9, 'VIP-19', 'duo', 3, 'lliure'),
-(9, 'VIP-20', 'duo', 3, 'lliure'),
-(9, 'VIP-21', 'solo', 3, 'lliure'),
-(9, 'VIP-22', 'solo', 3, 'lliure');
+(9, 'VIP-12', 'squad', 5, 'lliure'),
+(9, 'VIP-13', 'squad', 5, 'lliure'),
+(9, 'VIP-14', 'squad', 5, 'lliure'),
+(9, 'VIP-15', 'squad', 5, 'lliure'),
+(9, 'VIP-16', 'squad', 5, 'lliure'),
+(9, 'VIP-17', 'duo', 2, 'lliure'),
+(9, 'VIP-18', 'duo', 2, 'lliure'),
+(9, 'VIP-19', 'duo', 2, 'lliure'),
+(9, 'VIP-20', 'duo', 2, 'lliure');
 
 ALTER TABLE usuarios ENGINE=InnoDB;
 ALTER TABLE salas ENGINE=InnoDB;
