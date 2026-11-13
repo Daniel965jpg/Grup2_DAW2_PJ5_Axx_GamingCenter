@@ -48,8 +48,16 @@ try {
         }
     }
 
-    // Puestos de la sala elegida
-    $sql = "SELECT id_modulo, nombre, tipo, estado FROM modulos WHERE id_sala = ? ORDER BY nombre";
+    // Puestos de la sala elegida y, si están ocupados, quién los tiene (la ocupación sin fecha_fin).
+    // Mismos LEFT JOIN que en ocupados.php: con LEFT JOIN salen también los puestos libres,
+    // que no tienen ocupación abierta, y en ellos ocupado_por llega vacío (NULL)
+    $sql = "SELECT modulos.id_modulo, modulos.nombre, modulos.tipo, modulos.estado,
+                   usuarios.nom_real AS ocupado_por
+            FROM modulos
+            LEFT JOIN ocupaciones ON ocupaciones.id_modulo = modulos.id_modulo AND ocupaciones.fecha_fin IS NULL
+            LEFT JOIN usuarios ON ocupaciones.id_usuario = usuarios.id_usuario
+            WHERE modulos.id_sala = ?
+            ORDER BY modulos.nombre";
     $stmt = $conexion->prepare($sql);
     $stmt->execute([$sala_activa['id_sala']]);
     $modulos = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -104,6 +112,43 @@ foreach ($puestos_duo as $puesto) {
 if (!empty($pareja)) {
     $parejas[] = $pareja;
 }
+
+// Cada pareja es un módulo dúo: le ponemos su número (Módulo Dúo 1, 2...) y contamos sus libres
+$modulos_duo = [];
+$numero_modulo = 1;
+foreach ($parejas as $pareja) {
+    $modulos_duo[] = [
+        'numero' => $numero_modulo,
+        'puestos' => $pareja,
+        'resumen' => resumenPuestos($pareja)
+    ];
+    $numero_modulo++;
+}
+
+// Capacidad (número de puestos) y disponibilidad: de la sala entera y de cada bloque
+$total_sala = resumenPuestos($modulos);
+$total_squad = resumenPuestos($puestos_squad);
+$total_party = resumenPuestos($puestos_party);
+$total_duo = resumenPuestos($puestos_duo);
+$total_solo = resumenPuestos($puestos_solo);
+
+// Cuántas filas de zonas tiene la sala (Squad/Party, Dúo, Solo). El CSS lo usa para repartir
+// el alto de la pantalla: con 2 filas las tarjetas pueden ser más altas que con 3
+$filas = 0;
+if (!empty($puestos_squad) || !empty($puestos_party)) {
+    $filas++;
+}
+if (!empty($parejas)) {
+    $filas++;
+}
+if (!empty($puestos_solo)) {
+    $filas++;
+}
+
+// Cuántas tarjetas tiene la fila más larga: 5 en las salas con Squad, 4 en las de consolas
+// (Party de 4 y Dúo de 4). El CSS lo usa para repartir el ancho y que todas las salas
+// llenen la pantalla igual
+$columnas = max(count($puestos_squad), count($puestos_party), count($puestos_duo), count($puestos_solo));
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -121,7 +166,15 @@ if (!empty($pareja)) {
     <header class="cabecera cabecera-<?php echo $sala_activa['tipo']; ?>">
         <a href="dashboard.php" class="boton-volver">&lt; Volver</a>
 
-        <h1 class="cabecera-titulo"><?php echo htmlspecialchars($sala_activa['nombre']); ?></h1>
+        <div class="titulo-sala">
+            <h1 class="cabecera-titulo"><?php echo htmlspecialchars($sala_activa['nombre']); ?></h1>
+            <!-- Capacidad total de la sala y cómo está ahora -->
+            <span class="badge-capacidad">
+                Capacidad total: <?php echo $total_sala['puestos']; ?> puestos
+                | <span class="estado-libre"><?php echo textoCantidad($total_sala['libres'], 'libre', 'libres'); ?></span>
+                · <span class="estado-ocupado"><?php echo textoCantidad($total_sala['puestos'] - $total_sala['libres'], 'ocupado', 'ocupados'); ?></span>
+            </span>
+        </div>
 
         <div class="cabecera-acciones">
             <!-- Quién está conectado (se guarda en la sesión al hacer login) -->
@@ -157,14 +210,15 @@ if (!empty($pareja)) {
     }
     ?>
 
-    <main class="vista-puestos">
+    <!-- filas-N y columnas-N: el CSS calcula el alto y el ancho de las tarjetas para que la sala llene la pantalla -->
+    <main class="vista-puestos filas-<?php echo $filas; ?> columnas-<?php echo $columnas; ?>">
         <?php if (empty($modulos)) { ?>
             <p class="mensaje-vacio">Esta sala todavía no tiene puestos.</p>
         <?php } ?>
 
         <?php if (!empty($puestos_squad)) { ?>
             <section class="grupo-formato">
-                <h3 class="titulo-formato">Arena Squad</h3>
+                <h3 class="titulo-formato">Arena Squad <span class="capacidad-bloque">— Capacidad: <?php echo $total_squad['puestos']; ?> puestos (<?php echo $total_squad['libres']; ?>/<?php echo $total_squad['puestos']; ?> libres)</span></h3>
                 <div class="lista-squad">
                     <?php foreach ($puestos_squad as $puesto) { ?>
                         <?php include '../includes/tarjeta_puesto.php'; ?>
@@ -175,7 +229,7 @@ if (!empty($pareja)) {
 
         <?php if (!empty($puestos_party)) { ?>
             <section class="grupo-formato">
-                <h3 class="titulo-formato">Zona Party</h3>
+                <h3 class="titulo-formato">Zona Party <span class="capacidad-bloque">— Capacidad: <?php echo $total_party['puestos']; ?> puestos (<?php echo $total_party['libres']; ?>/<?php echo $total_party['puestos']; ?> libres)</span></h3>
                 <div class="lista-party">
                     <?php foreach ($puestos_party as $puesto) { ?>
                         <?php include '../includes/tarjeta_puesto.php'; ?>
@@ -186,12 +240,17 @@ if (!empty($pareja)) {
 
         <?php if (!empty($parejas)) { ?>
             <section class="grupo-formato">
-                <h3 class="titulo-formato">Zona Dúo</h3>
+                <h3 class="titulo-formato">Zona Dúo <span class="capacidad-bloque">— <?php echo count($modulos_duo); ?> módulos de 2 puestos (<?php echo $total_duo['libres']; ?>/<?php echo $total_duo['puestos']; ?> libres)</span></h3>
                 <div class="lista-duo">
-                    <!-- Una caja por pareja y dentro sus dos puestos -->
-                    <?php foreach ($parejas as $pareja) { ?>
+                    <!-- Una caja por módulo dúo: arriba su nombre y disponibilidad, debajo sus puestos -->
+                    <?php foreach ($modulos_duo as $modulo_duo) { ?>
                         <div class="caja-pareja">
-                            <?php foreach ($pareja as $puesto) { ?>
+                            <p class="titulo-modulo">
+                                Módulo Dúo <?php echo $modulo_duo['numero']; ?>
+                                (Cap. <?php echo $modulo_duo['resumen']['puestos']; ?> puestos)
+                                — <?php echo $modulo_duo['resumen']['libres']; ?>/<?php echo $modulo_duo['resumen']['puestos']; ?> libres
+                            </p>
+                            <?php foreach ($modulo_duo['puestos'] as $puesto) { ?>
                                 <?php include '../includes/tarjeta_puesto.php'; ?>
                             <?php } ?>
                         </div>
@@ -202,7 +261,7 @@ if (!empty($pareja)) {
 
         <?php if (!empty($puestos_solo)) { ?>
             <section class="grupo-formato">
-                <h3 class="titulo-formato">Zona Solo</h3>
+                <h3 class="titulo-formato">Zona Solo <span class="capacidad-bloque">— Capacidad: <?php echo $total_solo['puestos']; ?> puestos (<?php echo $total_solo['libres']; ?>/<?php echo $total_solo['puestos']; ?> libres)</span></h3>
                 <div class="lista-solo">
                     <?php foreach ($puestos_solo as $puesto) { ?>
                         <?php include '../includes/tarjeta_puesto.php'; ?>

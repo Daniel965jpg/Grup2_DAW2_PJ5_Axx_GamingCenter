@@ -1,6 +1,7 @@
 <?php
 // VISTA: HISTÓRICO DE OCUPACIONES
-// Tabla con todas las ocupaciones y 4 filtros por GET: sala, gamemaster, puesto y día.
+// Arriba, cuántas ocupaciones lleva cada sala. Debajo, la tabla con todas las ocupaciones
+// y 5 filtros por GET: sala, gamemaster, tipo de módulo, puesto y día.
 // Desde sala.php se llega ya filtrado por esa sala (historico.php?id_sala=3).
 
 session_start();
@@ -16,14 +17,26 @@ require_once '../includes/funciones.php';
 // Filtros: vacíos = sin filtrar
 $filtro_sala = '';
 $filtro_usuario = '';
+$filtro_tipo = '';
 $filtro_modulo = '';
 $filtro_fecha = '';
+
+// Los 4 tipos de módulo de la BD y cómo se escriben en pantalla (desplegable y columna Módulo)
+$nombres_tipo = [
+    'squad' => 'Squad',
+    'party' => 'Party',
+    'duo' => 'Dúo',
+    'solo' => 'Solo'
+];
 
 if (isset($_GET['id_sala'])) {
     $filtro_sala = limpiarDato($_GET['id_sala']);
 }
 if (isset($_GET['id_usuario'])) {
     $filtro_usuario = limpiarDato($_GET['id_usuario']);
+}
+if (isset($_GET['tipo_modulo'])) {
+    $filtro_tipo = limpiarDato($_GET['tipo_modulo']);
 }
 if (isset($_GET['modulo'])) {
     $filtro_modulo = limpiarDato($_GET['modulo']);
@@ -42,9 +55,20 @@ try {
     $stmt->execute();
     $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Resumen de arriba: GROUP BY junta las ocupaciones de cada sala y COUNT las cuenta
+    $sql = "SELECT salas.nombre, COUNT(*) AS total
+            FROM ocupaciones
+            JOIN modulos ON ocupaciones.id_modulo = modulos.id_modulo
+            JOIN salas ON modulos.id_sala = salas.id_sala
+            GROUP BY salas.id_sala, salas.nombre
+            ORDER BY salas.id_sala";
+    $stmt = $conexion->prepare($sql);
+    $stmt->execute();
+    $resumen_salas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     // WHERE 1=1 siempre se cumple: así cada filtro solo tiene que añadir "AND ..." detrás.
     // Los valores van aparte en $datos y en el mismo orden que los ?
-    $sql = "SELECT salas.nombre AS sala, modulos.nombre AS modulo,
+    $sql = "SELECT salas.nombre AS sala, modulos.tipo AS tipo_modulo, modulos.nombre AS modulo,
                    usuarios.nom_real, usuarios.cognom_real,
                    ocupaciones.fecha_inicio, ocupaciones.fecha_fin
             FROM ocupaciones
@@ -61,6 +85,10 @@ try {
     if (!empty($filtro_usuario)) {
         $sql = $sql . " AND usuarios.id_usuario = ?";
         $datos[] = $filtro_usuario;
+    }
+    if (!empty($filtro_tipo)) {
+        $sql = $sql . " AND modulos.tipo = ?";
+        $datos[] = $filtro_tipo;
     }
     if (!empty($filtro_modulo)) {
         // Con los % vale con escribir una parte del nombre ("PC-0", "SIM"...)
@@ -107,6 +135,18 @@ try {
     </header>
 
     <main class="contenido-historico">
+        <!-- Barra de resumen: total de ocupaciones de cada sala (sin filtros) -->
+        <?php if (!empty($resumen_salas)) { ?>
+            <div class="resumen-salas">
+                <?php foreach ($resumen_salas as $fila) { ?>
+                    <div class="resumen-sala">
+                        <span class="resumen-nombre"><?php echo htmlspecialchars($fila['nombre']); ?></span>
+                        <span class="resumen-total"><?php echo $fila['total']; ?></span>
+                    </div>
+                <?php } ?>
+            </div>
+        <?php } ?>
+
         <form method="GET" action="historico.php" class="caja-filtros">
             <div class="filtro">
                 <label for="id_sala">Sala</label>
@@ -131,6 +171,20 @@ try {
                             <option value="<?php echo $gamemaster['id_usuario']; ?>" selected><?php echo htmlspecialchars($gamemaster['nom_real'] . ' ' . $gamemaster['cognom_real']); ?></option>
                         <?php } else { ?>
                             <option value="<?php echo $gamemaster['id_usuario']; ?>"><?php echo htmlspecialchars($gamemaster['nom_real'] . ' ' . $gamemaster['cognom_real']); ?></option>
+                        <?php } ?>
+                    <?php } ?>
+                </select>
+            </div>
+
+            <div class="filtro">
+                <label for="tipo_modulo">Módulo</label>
+                <select name="tipo_modulo" id="tipo_modulo">
+                    <option value="">Todos</option>
+                    <?php foreach ($nombres_tipo as $valor => $texto) { ?>
+                        <?php if ($valor == $filtro_tipo) { ?>
+                            <option value="<?php echo $valor; ?>" selected><?php echo $texto; ?></option>
+                        <?php } else { ?>
+                            <option value="<?php echo $valor; ?>"><?php echo $texto; ?></option>
                         <?php } ?>
                     <?php } ?>
                 </select>
@@ -167,6 +221,7 @@ try {
                         <thead>
                             <tr>
                                 <th>Sala</th>
+                                <th>Módulo</th>
                                 <th>Puesto</th>
                                 <th>Gamemaster</th>
                                 <th>Inicio</th>
@@ -177,6 +232,7 @@ try {
                             <?php foreach ($ocupaciones as $ocupacion) { ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($ocupacion['sala']); ?></td>
+                                    <td><?php echo $nombres_tipo[$ocupacion['tipo_modulo']]; ?></td>
                                     <td><?php echo htmlspecialchars($ocupacion['modulo']); ?></td>
                                     <td><?php echo htmlspecialchars($ocupacion['nom_real'] . ' ' . $ocupacion['cognom_real']); ?></td>
                                     <!-- strtotime() pasa la fecha de la BD a número y date() la escribe como dd/mm/aaaa -->

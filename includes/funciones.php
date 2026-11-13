@@ -35,4 +35,28 @@ function imagenPuesto($nombre, $tipo_sala) {
     }
     return $imagen;
 }
+
+// Cuenta los puestos de una lista: cuántos hay (su capacidad) y cuántos están libres.
+// La usa sala.php para la sala entera, para cada bloque (Squad, Dúo...) y para cada módulo dúo.
+function resumenPuestos($lista) {
+    $resumen = ['puestos' => 0, 'libres' => 0];
+    foreach ($lista as $puesto) {
+        $resumen['puestos'] = $resumen['puestos'] + 1;
+        if ($puesto['estado'] == 'lliure') {
+            $resumen['libres'] = $resumen['libres'] + 1;
+        }
+    }
+    return $resumen;
+}
+
+// Número con su palabra en singular o plural: "1 ocupado", "3 ocupados".
+// Así no sale "1 ocupados" en los contadores del panel y de la sala.
+function textoCantidad($numero, $singular, $plural) {
+    if ($numero == 1) {
+        $texto = $numero . ' ' . $singular;
+    } else {
+        $texto = $numero . ' ' . $plural;
+    }
+    return $texto;
+}
 ?>

@@ -76,12 +76,22 @@ try {
     $conexion->beginTransaction();
 
     if ($puesto['estado'] == 'lliure') {
-        // OCUPAR: puesto a ocupado y apuntamos quién y cuándo
-        $stmt1 = $conexion->prepare("UPDATE modulos SET estado = 'ocupat' WHERE id_modulo = ?");
+        // OCUPAR: el "AND estado = 'lliure'" hace que, si dos gamemasters pulsan el mismo
+        // puesto a la vez, solo el primero lo cambie. Al segundo le sale 0 filas cambiadas.
+        $stmt1 = $conexion->prepare("UPDATE modulos SET estado = 'ocupat' WHERE id_modulo = ? AND estado = 'lliure'");
         $stmt1->execute([$id_modulo]);
 
-        $stmt2 = $conexion->prepare("INSERT INTO ocupaciones (id_modulo, id_usuario, fecha_inicio) VALUES (?, ?, NOW())");
-        $stmt2->execute([$id_modulo, $mi_id]);
+        if ($stmt1->rowCount() === 1) {
+            // Lo hemos ocupado nosotros: apuntamos quién y cuándo
+            $stmt2 = $conexion->prepare("INSERT INTO ocupaciones (id_modulo, id_usuario, fecha_inicio) VALUES (?, ?, NOW())");
+            $stmt2->execute([$id_modulo, $mi_id]);
+        } else {
+            // Otro lo ha ocupado justo antes: cerramos la transacción sin guardar nada
+            $conexion->rollBack();
+            $_SESSION['error'] = 'Este puesto lo acaba de ocupar otro gamemaster.';
+            header('Location: ' . $volver);
+            exit();
+        }
     } else {
         // LIBERAR: cerramos su ocupación (la que no tiene fecha_fin) y el puesto vuelve a libre
         $stmt1 = $conexion->prepare("UPDATE ocupaciones SET fecha_fin = NOW() WHERE id_modulo = ? AND id_usuario = ? AND fecha_fin IS NULL");

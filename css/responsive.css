@@ -42,33 +42,15 @@
         min-height: 260px;
     }
 
-    /* SALA: igual que el panel, deja de ser de una pantalla fija para poder bajar con scroll */
-    .pagina-sala {
-        height: auto;
-        min-height: 100vh;
-        overflow: visible;
+    /* SALA: la cabecera aquí ocupa dos líneas, así que se resta un poco más de alto
+       al repartirlo entre las filas de tarjetas (en styles.css son 275px y 235px) */
+    .vista-puestos.filas-3 {
+        --alto-puesto: clamp(110px, calc((100vh - 325px) / 3), 320px);
     }
 
-    .vista-puestos,
-    .grupo-formato {
-        flex: none;
-    }
-
-    /* Squad, Solo y Party: de 5 puestos por fila a 3, con filas de alto fijo
-       (la imagen se adapta al alto de la tarjeta, así que la tarjeta necesita una altura) */
-    .lista-squad,
-    .lista-solo,
-    .lista-party {
-        grid-template-columns: repeat(3, 1fr);
-        grid-auto-rows: 190px;
-    }
-
-    .lista-duo {
-        grid-auto-rows: 190px;
-    }
-
-    .tarjeta-puesto {
-        min-height: 0;
+    .vista-puestos.filas-2,
+    .vista-puestos.filas-1 {
+        --alto-puesto: clamp(110px, calc((100vh - 285px) / 2), 320px);
     }
 }
 
@@ -155,39 +137,40 @@
         font-size: 1.3rem;
     }
 
-    /* SALA: 2 puestos por fila y cada pareja de dúos en su propia fila */
-    .vista-puestos {
+    /* SALA y OCUPADOS: tarjetas de 150px para que quepan 2 por fila en un móvil
+       (también dentro de una caja dúo, que tiene su borde y su relleno) y centradas.
+       En la sala hay que repetir las clases filas-1/2/3 porque allí el tamaño se calcula aparte */
+    :root,
+    .vista-puestos.filas-1,
+    .vista-puestos.filas-2,
+    .vista-puestos.filas-3 {
+        --ancho-puesto: 150px;
+        --alto-puesto: 170px;
+    }
+
+    .vista-puestos,
+    .vista-ocupados {
         padding: 12px 16px;
+    }
+
+    /* En el móvil la sala usa todo el ancho, para que las tarjetas se centren como antes */
+    .vista-puestos {
+        align-self: stretch;
     }
 
     .lista-squad,
     .lista-solo,
-    .lista-party {
-        grid-template-columns: repeat(2, 1fr);
-        grid-auto-rows: 170px;
-        gap: 12px;
-    }
-
-    .lista-duo {
-        grid-template-columns: 1fr;
-        grid-auto-rows: 170px;
-        gap: 12px;
-    }
-
-    /* OCUPADOS: también 2 puestos por fila */
-    .vista-ocupados {
-        padding: 16px;
-    }
-
+    .lista-party,
+    .lista-duo,
     .lista-ocupados {
-        grid-template-columns: repeat(2, 1fr);
+        justify-content: center;
         gap: 12px;
     }
 
-    .lista-ocupados .tarjeta-puesto {
-        height: 200px;
-    }
 
+    .grupo-formato {
+        margin-bottom: 20px;
+    }
     /* FILTROS (histórico y ocupados): uno debajo de otro y a todo el ancho */
     .caja-filtros {
         flex-direction: column;
@@ -251,21 +234,9 @@
         margin-bottom: 14px;
     }
 
-    /* SALA y OCUPADOS: siguen 2 por fila, pero tarjetas algo más bajas */
-    .lista-squad,
-    .lista-solo,
-    .lista-party,
-    .lista-duo {
-        grid-auto-rows: 150px;
-        gap: 10px;
-    }
-
+    /* SALA y OCUPADOS: siguen 2 por fila, con un poco menos de hueco entre tarjetas */
     .caja-pareja {
         gap: 8px;
-    }
-
-    .lista-ocupados .tarjeta-puesto {
-        height: 180px;
     }
 
     .nombre-puesto {
@@ -277,5 +248,39 @@
     .tabla-historico td {
         padding: 8px 10px;
         font-size: 0.8rem;
+    }
+}
+
+
+/* ---------- Capacidad (panel y sala) en pantallas pequeñas ---------- */
+@media (max-width: 768px) {
+
+    /* La píldora de capacidad puede partirse en dos líneas */
+    .badge-capacidad {
+        white-space: normal;
+    }
+
+    /* En el panel ya no hace falta el alto mínimo: la lista de salas da altura de sobra */
+    .tarjeta-zona {
+        min-height: 0;
+    }
+}
+
+/* En el móvil la caja del módulo es más estrecha: letra del título un poco más pequeña */
+@media (max-width: 480px) {
+    .titulo-modulo {
+        font-size: 0.7rem;
+    }
+}
+
+/* Móviles muy estrechos (320-360px): tarjetas más pequeñas para que sigan cabiendo 2 por fila,
+   también dentro de las cajas dúo */
+@media (max-width: 360px) {
+    :root,
+    .vista-puestos.filas-1,
+    .vista-puestos.filas-2,
+    .vista-puestos.filas-3 {
+        --ancho-puesto: 120px;
+        --alto-puesto: 150px;
     }
 }

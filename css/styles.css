@@ -331,32 +331,68 @@ body > .mensaje-aviso {
     color: var(--texto);
 }
 
-/* La cabecera y los puestos forman exactamente una pantalla: alto fijo de 100vh y sin scroll.
-   Todo lo de dentro se encoge o se estira para caber, sea cual sea la pantalla o el número de PCs. */
-.pagina-sala {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+/* Tamaño de TODAS las tarjetas de puesto (sala y ocupados), definido una sola vez.
+   Así un PC de squad, uno de una caja dúo o un mando party miden exactamente lo mismo.
+   clamp(mínimo, ideal, máximo): el tamaño ideal se calcula con la pantalla y nunca pasa de los límites.
+   - Ancho: la fila más larga es la del Squad, con 5 tarjetas; 100vw es el ancho de la pantalla
+     y 120px lo que ocupan los huecos y márgenes de esa fila. Lo que queda, entre 5.
+   - Alto: las zonas van en 3 filas (Squad/Party, Dúo y Solo); 100vh es el alto de la pantalla
+     y 290px lo que ocupan la cabecera, los títulos y los márgenes. Lo que queda, entre 3.
+   Como máximo 210x195; si la pantalla es más baja (1920x790, portátiles, zoom de Windows)
+   se encogen lo justo para que la sala quepa sin scroll.
+   En responsive.css, para móviles, se ponen tamaños fijos. */
+:root {
+    --ancho-puesto: clamp(150px, calc((100vw - 120px) / 5), 210px);
+    --alto-puesto: clamp(120px, calc((100vh - 290px) / 3), 195px);
 }
 
-/* flex: 1 estira esta zona hasta el final de la pantalla y la reparte en columna entre los bloques.
-   min-height: 0 deja que se encoja por debajo de lo que "le gustaría" medir a su contenido */
+/* La sala ocupa como mínimo una pantalla, pero crece (y se baja con scroll) si hace falta.
+   En columna: arriba la cabecera y debajo el main, que se estira hasta abajo (flex: 1) */
+.pagina-sala {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* - flex: 1 → el main ocupa todo el alto que deja la cabecera
+   - justify-content: center → si sobra algo de alto, las zonas quedan centradas en vertical
+   - align-self: center → el bloque de zonas mide lo que su fila más larga y queda centrado
+     en horizontal (las filas siguen alineadas a la izquierda entre ellas) */
 .vista-puestos {
     flex: 1;
-    min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    justify-content: center;
+    align-self: center;
     padding: 12px 24px;
+    /* Dentro de la sala las tarjetas se hacen más grandes para llenar la pantalla.
+       5 tarjetas en la fila del Squad; 160px son los huecos, márgenes y la barra de scroll */
+    --ancho-puesto: clamp(150px, calc((100vw - 160px) / 5), 340px);
 }
 
-/* Cada bloque (Squad, Dúo, Solo) se lleva un trozo igual del alto */
+/* El alto se reparte entre las filas que tenga la sala (la clase la pone sala.php).
+   275px (con 3 filas) o 235px (con 2) son la cabecera, los títulos y los márgenes */
+
+.vista-puestos.filas-3 {
+    --alto-puesto: clamp(110px, calc((100vh - 275px) / 3), 320px);
+}
+
+.vista-puestos.filas-2,
+.vista-puestos.filas-1 {
+    --alto-puesto: clamp(110px, calc((100vh - 235px) / 2), 320px);
+}
+
+/* Salas de consolas: su fila más larga tiene 4 tarjetas (Party o Dúo), no 5 como el Squad.
+   Repartimos el ancho entre 4 para que llenen la pantalla igual que la Sala 1 o las VIP.
+   200px son los huecos, los bordes de las cajas dúo, los márgenes y la barra de scroll */
+.vista-puestos.columnas-4 {
+    --ancho-puesto: clamp(150px, calc((100vw - 200px) / 4), 430px);
+}
+
+/* Cada bloque (Squad, Party, Dúo, Solo) mide lo que mida su contenido,
+   y deja siempre el mismo hueco hasta el título del bloque siguiente */
 .grupo-formato {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 14px;
 }
 
 .titulo-formato {
@@ -364,44 +400,46 @@ body > .mensaje-aviso {
     text-transform: uppercase;
     letter-spacing: 2px;
     color: var(--texto-secundario);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
-/* Rejilla de 5 columnas iguales para squads y solos.
-   El problema estaba en que grid-auto-rows: minmax(0,1fr) dejaba que cada fila se estirara
-   al alto disponible y los PCs se hacían demasiado altos. Aquí se fija un mínimo y se recorta
-   el crecimiento para que los puestos mantengan una altura razonable. */
+/* Squad, Solo y Party: tarjetas una al lado de otra; si no caben, bajan a la siguiente fila */
 .lista-squad,
 .lista-solo,
 .lista-party {
-    flex: 1;
-    min-height: 0;
-    display: grid;
-    grid-template-columns: repeat(5, minmax(120px, 1fr));
-    grid-auto-rows: minmax(180px, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     gap: 16px;
-    align-items: stretch;
 }
 
-/* Dúos: dos cajas por fila, y dentro de cada caja sus dos PCs a partes iguales */
+/* Party: hueco de 28px para que sus 4 mandos midan lo mismo que la fila de abajo (2 cajas dúo)
+   y las dos filas acaben a la misma altura. Las cajas dúo suman 84px de más
+   (huecos, bordes y rellenos), que repartidos en los 3 huecos de la Party son 28px */
+.lista-party {
+    gap: 28px;
+}
+
+/* Dúos: las cajas de los módulos una al lado de otra, con más separación entre cajas */
 .lista-duo {
-    flex: 1;
-    min-height: 0;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: minmax(180px, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     gap: 24px;
 }
 
+/* Caja punteada de cada módulo dúo: sin altura fija, crece con su título y sus dos tarjetas */
 .caja-pareja {
-    min-height: 0;
+    /* Rejilla de 2 columnas que miden justo lo que una tarjeta: la caja mide lo que sus dos puestos */
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: repeat(2, var(--ancho-puesto));
     gap: 12px;
-    padding: 6px;
+    /* Arriba un poco más de relleno porque el título va encima del borde */
+    padding: 14px 8px 8px;
     border: 1px dashed var(--borde);
     border-radius: var(--radio);
+    /* Necesario para colocar el título (position: absolute) respecto a esta caja */
+    position: relative;
+    /* Hueco por arriba para la mitad del título que sobresale del borde */
+    margin-top: 8px;
 }
 
 /* ---------- DASHBOARD: zonas en tarjetas de neón ---------- */
@@ -608,9 +646,9 @@ body > .mensaje-aviso {
     align-items: center;
     justify-content: space-between;
     background-color: #0d1117;
-    /* La altura la controla la rejilla; si no se limita, la tarjeta se estira al alto total del bloque */
-    height: 100%;
-    min-height: 180px;
+    /* Mismo tamaño en todas partes (las variables están arriba, en la sección SALA) */
+    width: var(--ancho-puesto);
+    height: var(--alto-puesto);
     padding: 8px;
     border-radius: 8px;
     text-decoration: none;
@@ -643,18 +681,17 @@ body > .mensaje-aviso {
 .contenedor-imagen {
     position: relative;
     width: 100%;
-    flex: 1 1 auto;
-    min-height: 90px;
-    max-height: 220px;
+    flex: 1;
+    min-height: 0;
     margin: 4px 0;
 }
 
-/* La imagen debe ocupar un espacio limitado; si se deja absoluta con height:100% sobre una tarjeta
-   muy alta, hace que el PC parezca enorme. Aquí la imagen se ajusta al contenido disponible y
-   no estira la celda de la rejilla. */
+/* La imagen rellena el hueco sin empujar la tarjeta (position: absolute) y sin deformarse
+   (object-fit: contain). Como la tarjeta tiene alto fijo, el PC nunca sale enorme. */
 .imagen-puesto {
-    position: relative;
-    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -833,22 +870,37 @@ body > .mensaje-aviso {
     padding: 24px;
 }
 
-/* Aquí la página sí puede hacer scroll (puede haber muchos ocupados),
-   así que las tarjetas llevan un alto fijo para que la imagen tenga hueco */
+/* Mismas tarjetas y mismo tamaño que en la sala, una al lado de otra */
 .lista-ocupados {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 16px;
-}
-
-.lista-ocupados .tarjeta-puesto {
-    height: 220px;
 }
 
 .dato-puesto {
     font-size: 0.7rem;
     color: var(--texto-secundario);
     text-align: center;
+}
+
+/* En la sala solo las ocupadas tienen "Ocupado por...". Si esa línea ocupara sitio, en esas
+   tarjetas la imagen se encogería y el nombre subiría, y los nombres de una fila no quedarían
+   alineados. Por eso todas las tarjetas de la sala reservan abajo el hueco de la línea
+   (padding-bottom) y la línea se coloca en ese hueco con position: absolute.
+   En ocupados.php no se aplica: allí todas las tarjetas llevan sus líneas */
+.vista-puestos .tarjeta-puesto {
+    padding-bottom: 22px;
+}
+
+.vista-puestos .dato-puesto {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 6px;
+    /* Un nombre largo se corta con "..." en vez de salirse de la tarjeta */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ---------- PANEL: logo, cabecera de cristal e iconos ---------- */
@@ -969,4 +1021,145 @@ body > .mensaje-aviso {
 
 .usuario-activo i {
     color: var(--color-libre);   /* icono verde: sesión activa */
+}
+
+/* ---------- PANEL: lista de salas dentro de cada tarjeta de zona ---------- */
+
+/* La parte de arriba de la tarjeta (icono, título y contadores) es el enlace a la zona */
+.enlace-zona {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: var(--texto);
+    text-decoration: none;
+}
+
+/* Lista de salas: sin viñetas y a todo el ancho de la tarjeta */
+.lista-salas {
+    list-style: none;
+    width: 100%;
+    margin-top: 8px;
+    border-top: 1px solid var(--neon-suave);
+}
+
+/* Cada sala es una fila: nombre a la izquierda y números a la derecha */
+.lista-salas a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--texto-secundario);
+    font-size: 0.78rem;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.lista-salas a:hover {
+    background-color: var(--neon-suave);
+    color: var(--texto);
+}
+
+/* Si el nombre es largo se corta con "..." en vez de romper la tarjeta */
+.nombre-sala {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+.datos-sala {
+    white-space: nowrap;
+    color: var(--neon);
+    font-weight: bold;
+}
+
+/* ---------- SALA: capacidad total y de cada bloque ---------- */
+
+/* Título de la sala con la capacidad debajo */
+.titulo-sala {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+/* "Capacidad total: ..." en una píldora con borde neón del color de la zona */
+.badge-capacidad {
+    padding: 4px 12px;
+    border: 1px solid var(--color-pc);
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.25);
+    color: var(--texto);
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.cabecera-consola .badge-capacidad {
+    border-color: var(--color-consola);
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.25);
+}
+
+.cabecera-vip .badge-capacidad {
+    border-color: var(--color-vip);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+}
+
+/* Capacidad de cada bloque, al lado de "ARENA SQUAD", "ZONA DÚO"... sin mayúsculas */
+.capacidad-bloque {
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--texto-secundario);
+}
+
+/* Título de cada módulo dúo ("Módulo Dúo 1 (Cap. 2 puestos) — 2/2 libres") encima del borde
+   punteado, como la leyenda de un fieldset. Con position: absolute no ocupa sitio en la rejilla:
+   top: 0 lo pone en la línea del borde y translateY(-50%) lo sube la mitad de su alto.
+   El fondo igual que la página tapa el trozo de borde que queda detrás del texto. */
+.titulo-modulo {
+    position: absolute;
+    top: 0;
+    left: 12px;
+    transform: translateY(-50%);
+    padding: 0 6px;
+    background-color: var(--bg-principal);
+    font-size: 0.75rem;
+    color: var(--texto-secundario);
+    /* Siempre en una línea; si en un móvil no cabe, se corta con "..." en vez de pisar las tarjetas */
+    white-space: nowrap;
+    max-width: calc(100% - 24px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---------- HISTÓRICO: barra de resumen por sala ---------- */
+
+/* Una "pastilla" por sala con su total; si no caben en una fila, bajan a la siguiente */
+.resumen-salas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.resumen-sala {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    background-color: var(--bg-tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    font-size: 0.8rem;
+}
+
+.resumen-nombre {
+    color: var(--texto-secundario);
+}
+
+.resumen-total {
+    color: var(--color-pc);
+    font-weight: bold;
 }

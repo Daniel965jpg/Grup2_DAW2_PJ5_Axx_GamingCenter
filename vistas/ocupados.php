@@ -24,7 +24,20 @@ if (isset($_GET['id_usuario'])) {
     $filtro_usuario = limpiarDato($_GET['id_usuario']);
 }
 
+$mi_id = $_SESSION['usuario'];
+
 try {
+    // Rol del usuario conectado, sacado de la BD: el botón de cierre solo lo ve el admin
+    $stmt = $conexion->prepare("SELECT rol FROM usuarios WHERE id_usuario = ?");
+    $stmt->execute([$mi_id]);
+    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($usuario && $usuario['rol'] == 'admin') {
+        $es_admin = true;
+    } else {
+        $es_admin = false;
+    }
+
     // Opciones de los dos desplegables
     $stmt = $conexion->prepare("SELECT id_sala, nombre FROM salas ORDER BY id_sala");
     $stmt->execute();
@@ -96,8 +109,10 @@ foreach ($ocupados as $puesto) {
                 <div class="usuario-activo"><i class="fa-solid fa-user"></i> <?php echo htmlspecialchars($_SESSION['nom_real']); ?> (<?php echo htmlspecialchars($_SESSION['rol']); ?>)</div>
             <?php } ?>
             <a href="historico.php" class="boton-cabecera">Historial</a>
-            <!-- script.js pide confirmación antes de seguir este enlace -->
-            <a href="../procs/cierre_local_proc.php" id="boton-cierre" class="boton-cierre">Cierre de Local</a>
+            <!-- Solo para el admin. script.js pide confirmación antes de seguir este enlace -->
+            <?php if ($es_admin) { ?>
+                <a href="../procs/cierre_local_proc.php" id="boton-cierre" class="boton-cierre">Cierre de Local</a>
+            <?php } ?>
         </div>
     </header>
 

@@ -37,7 +37,8 @@ try {
     $stmt = $conexion->prepare($sql);
     $stmt->execute([$nombre_usuario]);
 } catch (PDOException $e) {
-    echo "Error al comprobar el usuario: " . $e->getMessage();
+    // No enseñamos $e->getMessage(): diría cosas de la BD (tablas, columnas) a cualquiera
+    echo "No se ha podido iniciar sesión. Inténtalo de nuevo más tarde.";
     die();
 }
 
@@ -46,6 +47,10 @@ if ($stmt->rowCount() === 1) {
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (password_verify($contrasena, $usuario['password'])) {
+        // Nuevo id de sesión al entrar: si alguien había conseguido el id de antes
+        // (fijación de sesión), ya no le sirve. El true borra la sesión vieja.
+        session_regenerate_id(true);
+
         // El id va en 'usuario' (es lo que comprueban todas las páginas).
         // El nombre y el rol son para enseñar en las cabeceras quién está conectado.
         $_SESSION['usuario'] = $usuario['id_usuario'];
