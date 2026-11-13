@@ -1,15 +1,15 @@
 <?php
-// FUNCIONES DE SANEAMIENTO Y VALIDACIÓN
-// Aquí solo van funciones sencillas: nada de conexión, consultas ni redirecciones.
+// FUNCIONES DE APOYO
+// Solo funciones sencillas: aquí no hay conexión, ni consultas, ni redirecciones.
 
-// Quita espacios sobrantes y convierte los caracteres especiales en entidades HTML (evita XSS)
+// Quita espacios de los lados y convierte < > " ' & en texto normal (evita XSS)
 function limpiarDato($dato) {
     $dato = trim($dato);
     $dato = htmlspecialchars($dato);
     return $dato;
 }
 
-// Devuelve true si alguno de los dos campos ha llegado vacío
+// true si alguno de los dos campos llega vacío
 function camposVacios($campo1, $campo2) {
     if (empty($campo1) || empty($campo2)) {
         $error = true;
@@ -19,14 +19,12 @@ function camposVacios($campo1, $campo2) {
     return $error;
 }
 
-// Devuelve la imagen que toca a un puesto según su nombre y el tipo de su sala.
-// La usan sala.php y ocupados.php, así la regla está escrita una sola vez.
-// str_contains mira si un texto contiene otro (SIM-03 contiene "SIM").
+// Imagen de cada puesto según su nombre (SIM-03, VR-01...) y el tipo de sala.
+// La usan sala.php y ocupados.php, así no repetimos la regla en dos sitios.
 function imagenPuesto($nombre, $tipo_sala) {
-    if (str_contains($nombre, 'SIM')) {
-        // El nombre del archivo tiene un espacio: en una URL se escribe como %20
-        $imagen = '../img/simuladorCoche%20(1).png';
-    } elseif (str_contains($nombre, 'VR')) {
+    if (preg_match('/SIM/', $nombre)) {
+        $imagen = '../img/simulador-coche.png';
+    } elseif (preg_match('/VR/', $nombre)) {
         $imagen = '../img/gafasrv.webp';
     } elseif ($tipo_sala == 'vip') {
         $imagen = '../img/logo_vip.png';
