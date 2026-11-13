@@ -1,0 +1,281 @@
+/* =========================================================
+   GAMING CENTER - Diseño responsive
+   styles.css tiene el diseño de escritorio. Aquí solo van los cambios para pantallas
+   más pequeñas. Se carga DESPUÉS de styles.css, así que si una regla de aquí choca con
+   una de allí, gana esta.
+   Puntos de ruptura:
+     - 1024px: tablets y portátiles pequeños
+     - 768px:  móviles grandes y tablets en vertical
+     - 480px:  móviles pequeños
+   ========================================================= */
+
+
+/* ---------- TABLETS Y PANTALLAS MEDIANAS (hasta 1024px) ---------- */
+@media (max-width: 1024px) {
+
+    /* CABECERAS: si no caben en una línea, los elementos bajan a la siguiente */
+    .cabecera {
+        flex-wrap: wrap;
+        gap: 12px 16px;
+        padding: 14px 20px;
+    }
+
+    .cabecera-acciones {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    /* PANEL: en escritorio mide justo una pantalla; aquí puede crecer y hacer scroll */
+    .pagina-panel {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    /* Las 4 tarjetas pasan de una fila de 4 a una cuadrícula de 2x2 */
+    .zonas {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .tarjeta-zona {
+        min-height: 260px;
+    }
+
+    /* SALA: igual que el panel, deja de ser de una pantalla fija para poder bajar con scroll */
+    .pagina-sala {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+
+    .vista-puestos,
+    .grupo-formato {
+        flex: none;
+    }
+
+    /* Squad, Solo y Party: de 5 puestos por fila a 3, con filas de alto fijo
+       (la imagen se adapta al alto de la tarjeta, así que la tarjeta necesita una altura) */
+    .lista-squad,
+    .lista-solo,
+    .lista-party {
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: 190px;
+    }
+
+    .lista-duo {
+        grid-auto-rows: 190px;
+    }
+
+    .tarjeta-puesto {
+        min-height: 0;
+    }
+}
+
+
+/* ---------- MÓVILES Y TABLETS EN VERTICAL (hasta 768px) ---------- */
+@media (max-width: 768px) {
+
+    /* CABECERAS: todo en columna y centrado */
+    .cabecera {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .cabecera-marca {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .logo-cabecera {
+        height: 56px;
+    }
+
+    .cabecera-titulo {
+        font-size: 1.2rem;
+    }
+
+    .cabecera-acciones {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .usuario-activo {
+        justify-content: center;
+    }
+
+    /* Botones de la cabecera (Ver Ocupados, Historial, Cierre de Local...) a todo el ancho
+       y más altos, para pulsarlos bien con el dedo */
+    .boton-cabecera,
+    .boton-salir,
+    .boton-cierre {
+        display: block;
+        padding: 12px 14px;
+        text-align: center;
+    }
+
+    /* Desplegable de salas: la etiqueta y el select ocupan todo el ancho */
+    .selector-sala {
+        justify-content: center;
+    }
+
+    .selector-sala select {
+        flex: 1;
+        min-height: 44px;
+    }
+
+    /* LOGIN: la caja ocupa el 90% del ancho y el logo es un poco más pequeño */
+    .login-panel {
+        width: 90%;
+        padding: 24px 20px 20px;
+    }
+
+    .logo-login {
+        width: 180px;
+    }
+
+    /* PANEL: las 4 tarjetas una debajo de otra, más bajitas para que el scroll sea cómodo */
+    .zonas {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .tarjeta-zona {
+        min-height: 200px;
+        padding: 24px 16px;
+    }
+
+    .icono-dashboard {
+        font-size: 3rem;
+    }
+
+    .tarjeta-zona h2 {
+        font-size: 1.3rem;
+    }
+
+    /* SALA: 2 puestos por fila y cada pareja de dúos en su propia fila */
+    .vista-puestos {
+        padding: 12px 16px;
+    }
+
+    .lista-squad,
+    .lista-solo,
+    .lista-party {
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: 170px;
+        gap: 12px;
+    }
+
+    .lista-duo {
+        grid-template-columns: 1fr;
+        grid-auto-rows: 170px;
+        gap: 12px;
+    }
+
+    /* OCUPADOS: también 2 puestos por fila */
+    .vista-ocupados {
+        padding: 16px;
+    }
+
+    .lista-ocupados {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .lista-ocupados .tarjeta-puesto {
+        height: 200px;
+    }
+
+    /* FILTROS (histórico y ocupados): uno debajo de otro y a todo el ancho */
+    .caja-filtros {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filtro select,
+    .filtro input {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    .filtro-botones {
+        flex-direction: column;
+    }
+
+    .boton-filtrar,
+    .boton-limpiar {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        text-align: center;
+    }
+
+    /* HISTÓRICO: menos margen alrededor y celdas más compactas.
+       Si aun así la tabla no cabe, su contenedor (.tabla-historico-contenedor, con overflow-x: auto)
+       deja moverla de lado sin que se rompa el ancho de la página */
+    .contenido-historico {
+        padding: 16px 12px;
+    }
+
+    .cabecera-historico-tabla {
+        padding: 16px;
+    }
+
+    .tabla-historico th,
+    .tabla-historico td {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+}
+
+
+/* ---------- MÓVILES PEQUEÑOS (hasta 480px) ---------- */
+@media (max-width: 480px) {
+
+    /* LOGIN: menos margen para que quepa entera sin scroll */
+    .pagina-login {
+        padding: 12px;
+    }
+
+    .login-panel {
+        padding: 20px 16px 16px;
+    }
+
+    .logo-login {
+        width: 150px;
+    }
+
+    .login-formulario .campo {
+        margin-bottom: 14px;
+    }
+
+    /* SALA y OCUPADOS: siguen 2 por fila, pero tarjetas algo más bajas */
+    .lista-squad,
+    .lista-solo,
+    .lista-party,
+    .lista-duo {
+        grid-auto-rows: 150px;
+        gap: 10px;
+    }
+
+    .caja-pareja {
+        gap: 8px;
+    }
+
+    .lista-ocupados .tarjeta-puesto {
+        height: 180px;
+    }
+
+    .nombre-puesto {
+        font-size: 0.95rem;
+    }
+
+    /* HISTÓRICO: letra un poco más pequeña en la tabla */
+    .tabla-historico th,
+    .tabla-historico td {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
+}

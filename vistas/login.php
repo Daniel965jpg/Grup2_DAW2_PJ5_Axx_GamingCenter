@@ -18,6 +18,7 @@ if (isset($_SESSION['usuario'])) {
     <title>Login - Hidden Arena</title>
     <link rel="icon" type="image/png" href="../img/logo-hidden-mini.png">
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body class="pagina-login">
     <!-- muted hace falta para que el navegador deje reproducirlo solo -->
