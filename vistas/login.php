@@ -1,10 +1,10 @@
 <?php
 // VISTA: LOGIN
-// Formulario de acceso para los trabajadores del local. Envía los datos a procs/login_proc.php.
+// Formulario de acceso del personal. Envía los datos a procs/login_proc.php.
 
 session_start();
 
-// Si ya ha iniciado sesión no tiene sentido enseñarle el login otra vez
+// Si ya ha entrado, directo al panel
 if (isset($_SESSION['usuario'])) {
     header('Location: dashboard.php');
     exit();
@@ -15,32 +15,32 @@ if (isset($_SESSION['usuario'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Gaming Center</title>
-    <link rel="icon" type="image/png" href="../img/favicon.png">
+    <title>Login - Hidden Arena</title>
+    <link rel="icon" type="image/png" href="../img/logo-hidden-mini.png">
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body class="pagina-login">
-    <!-- muted es obligatorio para que el navegador deje reproducirlo solo; playsinline evita que el móvil lo abra a pantalla completa -->
-    <video class="video-fondo" autoplay muted loop playsinline>
+    <!-- muted hace falta para que el navegador deje reproducirlo solo -->
+    <video id="bg-video" class="video-fondo" autoplay loop muted playsinline>
         <source src="../img/video-fondo-gamingcenter.mp4" type="video/mp4">
     </video>
 
     <main class="login-panel">
         <div class="login-cabecera">
-            <span class="login-estado">Sistema en línea</span>
-            <h1 class="login-titulo">Gaming Center</h1>
+            <span class="login-estado">● Sistema en línea</span>
+            <img src="../img/logo-hidden-mini.png" alt="Hidden Arena" class="logo-login">
             <p class="login-subtitulo">Panel de control · Acceso del personal</p>
         </div>
 
         <?php
-        // El mensaje se enseña una sola vez: después de pintarlo lo borramos de la sesión
+        // Mensaje de error de una sola vez: se enseña y se borra
         if (isset($_SESSION['error'])) {
             echo "<div class='mensaje-aviso mensaje-aviso-error'>" . $_SESSION['error'] . "</div>";
             unset($_SESSION['error']);
         }
         ?>
 
-        <!-- novalidate desactiva los avisos del navegador para que se vean los nuestros (script.js) -->
+        <!-- novalidate quita los avisos del navegador para que salgan los nuestros (script.js) -->
         <form class="login-formulario" action="../procs/login_proc.php" method="POST" id="formulario-login" novalidate>
             <div class="campo">
                 <label for="usuario">Usuario</label>
@@ -57,6 +57,7 @@ if (isset($_SESSION['usuario'])) {
             <button type="submit" class="boton-login">Iniciar sesión</button>
         </form>
 
+        <!-- Los tres colores de las salas, como adorno -->
         <div class="login-pie">
             <span class="punto punto-pc"></span>
             <span class="punto punto-consola"></span>

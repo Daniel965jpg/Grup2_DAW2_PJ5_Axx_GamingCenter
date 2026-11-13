@@ -1,8 +1,7 @@
 <?php
-// VISTA: HISTORIAL DE OCUPACIONES CON FILTROS
-// Tabla con todas las ocupaciones (quién, qué puesto, de qué sala y cuándo) y 4 filtros por GET:
-// sala, gamemaster, puesto y día. Se puede llegar ya filtrado desde sala.php (historico.php?id_sala=3).
-// Los filtros van por GET porque solo sirven para buscar: no modifican nada y la URL se puede guardar.
+// VISTA: HISTÓRICO DE OCUPACIONES
+// Tabla con todas las ocupaciones y 4 filtros por GET: sala, gamemaster, puesto y día.
+// Desde sala.php se llega ya filtrado por esa sala (historico.php?id_sala=3).
 
 session_start();
 
@@ -14,7 +13,7 @@ if (!isset($_SESSION['usuario'])) {
 require_once '../bd/conexion.php';
 require_once '../includes/funciones.php';
 
-// Valores de los filtros. Vacíos = sin filtrar. Si llegan por GET, los limpiamos.
+// Filtros: vacíos = sin filtrar
 $filtro_sala = '';
 $filtro_usuario = '';
 $filtro_modulo = '';
@@ -34,7 +33,7 @@ if (isset($_GET['fecha'])) {
 }
 
 try {
-    // Listas para rellenar los dos desplegables del formulario
+    // Opciones de los dos desplegables
     $stmt = $conexion->prepare("SELECT id_sala, nombre FROM salas ORDER BY id_sala");
     $stmt->execute();
     $salas = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -43,10 +42,8 @@ try {
     $stmt->execute();
     $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // CONSULTA DINÁMICA
-    // Empezamos con "WHERE 1=1" (siempre es verdad) para poder ir añadiendo "AND ..." por cada
-    // filtro rellenado sin preocuparnos de si es el primero. Lo que añadimos son textos fijos con ?,
-    // y los valores van aparte en $datos, en el mismo orden: sigue siendo una consulta preparada.
+    // WHERE 1=1 siempre se cumple: así cada filtro solo tiene que añadir "AND ..." detrás.
+    // Los valores van aparte en $datos y en el mismo orden que los ?
     $sql = "SELECT salas.nombre AS sala, modulos.nombre AS modulo,
                    usuarios.nom_real, usuarios.cognom_real,
                    ocupaciones.fecha_inicio, ocupaciones.fecha_fin
@@ -66,12 +63,12 @@ try {
         $datos[] = $filtro_usuario;
     }
     if (!empty($filtro_modulo)) {
-        // LIKE con % para que "PC-0" encuentre PC-01, PC-02...
+        // Con los % vale con escribir una parte del nombre ("PC-0", "SIM"...)
         $sql = $sql . " AND modulos.nombre LIKE ?";
         $datos[] = '%' . $filtro_modulo . '%';
     }
     if (!empty($filtro_fecha)) {
-        // DATE() se queda solo con el día de fecha_inicio (sin la hora) para compararlo con el del calendario
+        // DATE() quita la hora para comparar solo el día
         $sql = $sql . " AND DATE(ocupaciones.fecha_inicio) = ?";
         $datos[] = $filtro_fecha;
     }
@@ -82,7 +79,7 @@ try {
     $stmt->execute($datos);
     $ocupaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo "Error al cargar el historial: " . $e->getMessage();
+    echo "Error al cargar el histórico: " . $e->getMessage();
     die();
 }
 ?>
@@ -90,20 +87,25 @@ try {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Historial - Gaming Center</title>
-    <link rel="icon" type="image/png" href="../img/favicon.png">
+    <title>Histórico - Hidden Arena</title>
+    <link rel="icon" type="image/png" href="../img/logo-hidden-mini.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body class="pagina-historico">
     <header class="cabecera">
         <a href="dashboard.php" class="boton-volver">&lt; Volver al panel</a>
         <h1 class="cabecera-titulo">Historial de ocupaciones</h1>
-        <a href="ocupados.php" class="boton-cabecera">Ver Ocupados</a>
+        <div class="cabecera-acciones">
+            <?php if (isset($_SESSION['nom_real'])) { ?>
+                <div class="usuario-activo"><i class="fa-solid fa-user"></i> <?php echo htmlspecialchars($_SESSION['nom_real']); ?> (<?php echo htmlspecialchars($_SESSION['rol']); ?>)</div>
+            <?php } ?>
+            <a href="ocupados.php" class="boton-cabecera">Ver Ocupados</a>
+        </div>
     </header>
 
     <main class="contenido-historico">
-        <!-- FILTROS: al pulsar "Filtrar" se recarga esta misma página con los valores en la URL -->
-        <form method="GET" action="historico.php" class="filtros-historial">
+        <form method="GET" action="historico.php" class="caja-filtros">
             <div class="filtro">
                 <label for="id_sala">Sala</label>
                 <select name="id_sala" id="id_sala">
@@ -134,7 +136,7 @@ try {
 
             <div class="filtro">
                 <label for="modulo">Puesto</label>
-                <!-- $filtro_modulo ya viene de limpiarDato, por eso se muestra tal cual -->
+                <!-- Ya viene limpio de limpiarDato, por eso se pinta tal cual -->
                 <input type="text" name="modulo" id="modulo" placeholder="Ej: PC-01, SIM, VR..." value="<?php echo $filtro_modulo; ?>">
             </div>
 
@@ -145,7 +147,6 @@ try {
 
             <div class="filtro-botones">
                 <button type="submit" class="boton-filtrar">Filtrar</button>
-                <!-- Sin parámetros en la URL = sin filtros -->
                 <a href="historico.php" class="boton-limpiar">Limpiar</a>
             </div>
         </form>
@@ -176,7 +177,7 @@ try {
                                     <td><?php echo htmlspecialchars($ocupacion['sala']); ?></td>
                                     <td><?php echo htmlspecialchars($ocupacion['modulo']); ?></td>
                                     <td><?php echo htmlspecialchars($ocupacion['nom_real'] . ' ' . $ocupacion['cognom_real']); ?></td>
-                                    <!-- strtotime pasa la fecha de la BD a número y date() la escribe en formato español -->
+                                    <!-- strtotime() pasa la fecha de la BD a número y date() la escribe como dd/mm/aaaa -->
                                     <td><?php echo date('d/m/Y H:i', strtotime($ocupacion['fecha_inicio'])); ?></td>
                                     <td>
                                         <?php if (empty($ocupacion['fecha_fin'])) { ?>
