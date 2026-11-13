@@ -1,11 +1,10 @@
 <?php
-// VISTA: DASHBOARD
-// Pantalla principal tras el login: cuatro tarjetas grandes para entrar a cada zona del local
-// (PC Standard, Consolas, VIP) o al histórico. Cada zona enseña cuántos puestos hay libres y ocupados.
+// VISTA: PANEL DE CONTROL
+// Página principal después del login: una tarjeta por zona (PC, consolas, VIP) con sus
+// puestos libres y ocupados, y otra para el histórico.
 
 session_start();
 
-// Sin sesión no se puede ver el panel, así que lo mandamos al login
 if (!isset($_SESSION['usuario'])) {
     header('Location: login.php');
     exit();
@@ -16,18 +15,19 @@ require_once '../bd/conexion.php';
 $mi_id = $_SESSION['usuario'];
 
 try {
-    // En la sesión solo guardamos el id, así que el nombre y el rol los sacamos de la BD
+    // Nombre y rol del usuario para la bienvenida
     $sql = "SELECT nom_real, rol FROM usuarios WHERE id_usuario = ?";
     $stmt = $conexion->prepare($sql);
     $stmt->execute([$mi_id]);
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Cuenta los puestos de un estado dentro de las salas de un tipo.
-    // Se prepara una sola vez y luego se ejecuta para cada zona dentro del foreach.
+    // Cuántos puestos hay en un estado dentro de las salas de un tipo.
+    // Se prepara una vez fuera y se ejecuta dentro del foreach para cada zona.
     $sql = "SELECT COUNT(*) AS total FROM modulos
             WHERE estado = ? AND id_sala IN (SELECT id_sala FROM salas WHERE tipo = ?)";
     $stmt_contar = $conexion->prepare($sql);
 
+    // Queda así: $resumen['pc']['libres'], $resumen['vip']['ocupados'], etc.
     $tipos = ['pc', 'consola', 'vip'];
     $resumen = [];
     foreach ($tipos as $tipo) {
@@ -40,7 +40,7 @@ try {
         $resumen[$tipo]['ocupados'] = $fila['total'];
     }
 } catch (PDOException $e) {
-    echo "Error al cargar el dashboard: " . $e->getMessage();
+    echo "Error al cargar el panel: " . $e->getMessage();
     die();
 }
 ?>
@@ -48,36 +48,42 @@ try {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - Gaming Center</title>
-    <link rel="icon" type="image/png" href="../img/favicon.png">
+    <title>Panel de Control - Hidden Arena</title>
+    <link rel="icon" type="image/png" href="../img/logo-hidden-mini.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body class="pagina-panel">
+    <video id="bg-video" class="video-fondo" autoplay loop muted playsinline>
+        <source src="../img/video-fondo-gamingcenter.mp4" type="video/mp4">
+    </video>
+
     <header class="cabecera">
-        <div>
-            <h1 class="cabecera-titulo">Panel de Control</h1>
-            <p class="cabecera-bienvenida">Bienvenido, <?php echo $usuario['nom_real']; ?>. Selecciona una zona para gestionar la ocupación de las salas.</p>
+        <div class="cabecera-marca">
+            <img src="../img/logo-hidden-mini.png" alt="Hidden Arena" class="logo-cabecera">
+            <div>
+                <h1 class="cabecera-titulo">Panel de Control</h1>
+                <p class="cabecera-bienvenida">Bienvenido, <?php echo htmlspecialchars($usuario['nom_real']); ?> (<?php echo htmlspecialchars($usuario['rol']); ?>). Selecciona una zona para gestionar la ocupación de las salas.</p>
+            </div>
         </div>
-        <div class="cabecera-usuario">
-            <!-- Lista de todos los puestos ocupados del local, para liberarlos desde un solo sitio -->
-            <a href="ocupados.php" class="boton-cabecera">Ver Ocupados</a>
-            <span><?php echo $usuario['nom_real']; ?> (<?php echo $usuario['rol']; ?>)</span>
+        <div class="cabecera-acciones">
             <a href="../procs/logout.php" class="boton-salir">Cerrar sesión</a>
+            <a href="ocupados.php" class="boton-cabecera">Ver Ocupados</a>
         </div>
     </header>
 
     <?php
-    // Por ejemplo, si sala.php nos devuelve aquí porque la zona no tiene salas
+    // Por ejemplo, cuando sala.php nos devuelve aquí porque la zona no tiene salas
     if (isset($_SESSION['error'])) {
         echo "<div class='mensaje-aviso mensaje-aviso-error'>" . $_SESSION['error'] . "</div>";
         unset($_SESSION['error']);
     }
     ?>
 
-    <!-- Las 4 tarjetas ocupan todo el alto que queda debajo de la cabecera -->
     <main class="zonas">
-        <!-- El tipo va por GET en el enlace: sala.php enseña solo las salas de ese tipo -->
+        <!-- El tipo va en el enlace: sala.php enseña solo las salas de ese tipo -->
         <a href="sala.php?tipo=pc" class="tarjeta-zona tarjeta-pc">
+            <i class="fa-solid fa-computer icono-dashboard pc-neon"></i>
             <h2>PC Standard</h2>
             <p class="zona-descripcion">Ordenadores para jugar solo, en dúo o en squad</p>
             <div class="zona-estados">
@@ -87,6 +93,7 @@ try {
         </a>
 
         <a href="sala.php?tipo=consola" class="tarjeta-zona tarjeta-consola">
+            <i class="fa-solid fa-gamepad icono-dashboard consola-neon"></i>
             <h2>Consolas y Simuladores</h2>
             <p class="zona-descripcion">PS5, volantes y simuladores</p>
             <div class="zona-estados">
@@ -96,6 +103,7 @@ try {
         </a>
 
         <a href="sala.php?tipo=vip" class="tarjeta-zona tarjeta-vip">
+            <i class="fa-solid fa-crown icono-dashboard vip-neon"></i>
             <h2>Salas VIP</h2>
             <p class="zona-descripcion">Equipos Pro para grupos</p>
             <div class="zona-estados">
@@ -105,6 +113,7 @@ try {
         </a>
 
         <a href="historico.php" class="tarjeta-zona tarjeta-historico">
+            <i class="fa-solid fa-clock-rotate-left icono-dashboard historico-neon"></i>
             <h2>Histórico</h2>
             <p class="zona-descripcion">Registro de todas las ocupaciones</p>
         </a>
