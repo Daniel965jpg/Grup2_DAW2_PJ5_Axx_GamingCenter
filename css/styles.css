@@ -1,8 +1,4 @@
-/* =========================================================
-   GAMING CENTER - Estilos generales
-   Tema oscuro que imita el interior de un PC.
-   Los colores van en variables para cambiarlos desde un solo sitio.
-   ========================================================= */
+/* ===== VARIABLES Y ESTILOS GENERALES ===== */
 
 :root {
     /* Fondos */
@@ -41,7 +37,7 @@ body {
     color: var(--texto);
 }
 
-/* ---------- Mensajes de aviso (error / éxito) ---------- */
+/* ===== MENSAJES DE AVISO (ERROR / ÉXITO) ===== */
 
 .mensaje-aviso {
     padding: 12px 16px;
@@ -56,38 +52,30 @@ body {
     color: var(--color-ocupado);
 }
 
-/* ---------- LOGIN ---------- */
+/* ===== LOGIN ===== */
 
-/* Centra el panel en la pantalla con flexbox */
 .pagina-login {
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
-    /* Rejilla muy sutil de fondo, como una placa base */
     background-image:
         linear-gradient(rgba(0, 210, 255, 0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(0, 210, 255, 0.04) 1px, transparent 1px);
     background-size: 40px 40px;
 }
 
-/* Vídeo de fondo: fijo detrás de todo y ocupando toda la pantalla.
-   Al ser fixed sale del flujo, así que el flexbox del body sigue centrando el panel. */
 .video-fondo {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;          /* rellena la pantalla sin deformarse (recorta lo que sobra) */
-    z-index: -2;                /* detrás de la capa oscura y del contenido */
+    object-fit: cover;
+    z-index: -2;
 }
 
-/* Capa negra semitransparente encima del vídeo para oscurecerlo y que se lea bien el contenido.
-   Antes se hacía con filter: brightness() en el vídeo, pero eso obliga al navegador a recalcular
-   cada fotograma; una capa de color por encima es mucho más ligera.
-   ::before crea un elemento "falso" dentro del body sin tener que añadirlo al HTML. */
 .pagina-login::before,
 .pagina-panel::before {
     content: "";
@@ -97,17 +85,14 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(9, 12, 16, 0.6);
-    z-index: -1;                /* encima del vídeo (-2) y debajo del contenido */
+    z-index: -1;
 }
 
 .login-panel {
     width: 100%;
     max-width: 400px;
-    /* Efecto cristal (glassmorphism): fondo semitransparente + desenfoque de lo que hay detrás */
-    /* (en esta caja pequeña el blur no da lag, al contrario que en las 4 tarjetas grandes del panel) */
     background-color: rgba(22, 27, 34, 0.55);
     backdrop-filter: blur(10px);
-    /* Borde de neón azul alrededor de toda la caja, con brillo por fuera y un poco por dentro */
     border: 2px solid rgba(0, 210, 255, 0.7);
     border-radius: 18px;
     box-shadow: 0 0 25px rgba(0, 210, 255, 0.35), inset 0 0 25px rgba(0, 210, 255, 0.08);
@@ -128,7 +113,6 @@ body {
     margin-bottom: 12px;
 }
 
-/* Logo en lugar del título de texto. drop-shadow le da un brillo azul siguiendo su silueta */
 .logo-login {
     display: block;
     width: 240px;
@@ -167,7 +151,6 @@ body {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* Mensaje que escribe script.js debajo de un campo vacío */
 .aviso-campo-error {
     display: block;
     margin-top: 6px;
@@ -179,7 +162,6 @@ body {
     color: #484f58;
 }
 
-/* Al escribir, el input se ilumina en azul neón */
 .login-formulario input:focus {
     outline: none;
     border-color: var(--color-pc);
@@ -190,7 +172,6 @@ body {
     width: 100%;
     padding: 13px;
     margin-top: 8px;
-    /* Botón con brillo de neón azul siempre encendido, como el borde de la caja */
     background-color: rgba(0, 210, 255, 0.08);
     border: 2px solid var(--color-pc);
     border-radius: 8px;
@@ -204,7 +185,6 @@ body {
     transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
-/* Efecto neón verde al pasar el ratón, como el color de "libre" */
 .boton-login:hover {
     background-color: var(--color-libre);
     border-color: var(--color-libre);
@@ -212,7 +192,6 @@ body {
     box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
 }
 
-/* Tres puntitos con los colores de las salas como detalle decorativo */
 .login-pie {
     display: flex;
     justify-content: center;
@@ -243,7 +222,7 @@ body {
 
 
 
-/* ---------- DASHBOARD ---------- */
+/* ===== DASHBOARD ===== */
 
 .cabecera {
     display: flex;
@@ -287,14 +266,12 @@ body {
     color: var(--color-ocupado);
 }
 
-/* El aviso de error del dashboard va fuera de una tarjeta, así que le damos margen */
 body > .mensaje-aviso {
     margin: 24px 24px 0;
 }
 
-/* ---------- SALA (vista de puestos) ---------- */
+/* ===== SALA (VISTA DE PUESTOS) ===== */
 
-/* Línea inferior de la cabecera con el color del tipo de sala */
 .cabecera-pc {
     border-bottom: 2px solid var(--color-pc);
 }
@@ -331,33 +308,17 @@ body > .mensaje-aviso {
     color: var(--texto);
 }
 
-/* Tamaño de TODAS las tarjetas de puesto (sala y ocupados), definido una sola vez.
-   Así un PC de squad, uno de una caja dúo o un mando party miden exactamente lo mismo.
-   clamp(mínimo, ideal, máximo): el tamaño ideal se calcula con la pantalla y nunca pasa de los límites.
-   - Ancho: la fila más larga es la del Squad, con 5 tarjetas; 100vw es el ancho de la pantalla
-     y 120px lo que ocupan los huecos y márgenes de esa fila. Lo que queda, entre 5.
-   - Alto: las zonas van en 3 filas (Squad/Party, Dúo y Solo); 100vh es el alto de la pantalla
-     y 290px lo que ocupan la cabecera, los títulos y los márgenes. Lo que queda, entre 3.
-   Como máximo 210x195; si la pantalla es más baja (1920x790, portátiles, zoom de Windows)
-   se encogen lo justo para que la sala quepa sin scroll.
-   En responsive.css, para móviles, se ponen tamaños fijos. */
 :root {
     --ancho-puesto: clamp(150px, calc((100vw - 120px) / 5), 210px);
     --alto-puesto: clamp(120px, calc((100vh - 290px) / 3), 195px);
 }
 
-/* La sala ocupa como mínimo una pantalla, pero crece (y se baja con scroll) si hace falta.
-   En columna: arriba la cabecera y debajo el main, que se estira hasta abajo (flex: 1) */
 .pagina-sala {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-/* - flex: 1 → el main ocupa todo el alto que deja la cabecera
-   - justify-content: center → si sobra algo de alto, las zonas quedan centradas en vertical
-   - align-self: center → el bloque de zonas mide lo que su fila más larga y queda centrado
-     en horizontal (las filas siguen alineadas a la izquierda entre ellas) */
 .vista-puestos {
     flex: 1;
     display: flex;
@@ -365,13 +326,9 @@ body > .mensaje-aviso {
     justify-content: center;
     align-self: center;
     padding: 12px 24px;
-    /* Dentro de la sala las tarjetas se hacen más grandes para llenar la pantalla.
-       5 tarjetas en la fila del Squad; 160px son los huecos, márgenes y la barra de scroll */
     --ancho-puesto: clamp(150px, calc((100vw - 160px) / 5), 340px);
 }
 
-/* El alto se reparte entre las filas que tenga la sala (la clase la pone sala.php).
-   275px (con 3 filas) o 235px (con 2) son la cabecera, los títulos y los márgenes */
 
 .vista-puestos.filas-3 {
     --alto-puesto: clamp(110px, calc((100vh - 275px) / 3), 320px);
@@ -382,15 +339,10 @@ body > .mensaje-aviso {
     --alto-puesto: clamp(110px, calc((100vh - 235px) / 2), 320px);
 }
 
-/* Salas de consolas: su fila más larga tiene 4 tarjetas (Party o Dúo), no 5 como el Squad.
-   Repartimos el ancho entre 4 para que llenen la pantalla igual que la Sala 1 o las VIP.
-   200px son los huecos, los bordes de las cajas dúo, los márgenes y la barra de scroll */
 .vista-puestos.columnas-4 {
     --ancho-puesto: clamp(150px, calc((100vw - 200px) / 4), 430px);
 }
 
-/* Cada bloque (Squad, Party, Dúo, Solo) mide lo que mida su contenido,
-   y deja siempre el mismo hueco hasta el título del bloque siguiente */
 .grupo-formato {
     margin-bottom: 14px;
 }
@@ -403,7 +355,6 @@ body > .mensaje-aviso {
     margin-bottom: 8px;
 }
 
-/* Squad, Solo y Party: tarjetas una al lado de otra; si no caben, bajan a la siguiente fila */
 .lista-squad,
 .lista-solo,
 .lista-party {
@@ -412,40 +363,29 @@ body > .mensaje-aviso {
     gap: 16px;
 }
 
-/* Party: hueco de 28px para que sus 4 mandos midan lo mismo que la fila de abajo (2 cajas dúo)
-   y las dos filas acaben a la misma altura. Las cajas dúo suman 84px de más
-   (huecos, bordes y rellenos), que repartidos en los 3 huecos de la Party son 28px */
 .lista-party {
     gap: 28px;
 }
 
-/* Dúos: las cajas de los módulos una al lado de otra, con más separación entre cajas */
 .lista-duo {
     display: flex;
     flex-wrap: wrap;
     gap: 24px;
 }
 
-/* Caja punteada de cada módulo dúo: sin altura fija, crece con su título y sus dos tarjetas */
 .caja-pareja {
-    /* Rejilla de 2 columnas que miden justo lo que una tarjeta: la caja mide lo que sus dos puestos */
     display: grid;
     grid-template-columns: repeat(2, var(--ancho-puesto));
     gap: 12px;
-    /* Arriba un poco más de relleno porque el título va encima del borde */
     padding: 14px 8px 8px;
     border: 1px dashed var(--borde);
     border-radius: var(--radio);
-    /* Necesario para colocar el título (position: absolute) respecto a esta caja */
     position: relative;
-    /* Hueco por arriba para la mitad del título que sobresale del borde */
     margin-top: 8px;
 }
 
-/* ---------- DASHBOARD: zonas en tarjetas de neón ---------- */
+/* ===== DASHBOARD: ZONAS EN TARJETAS DE NEÓN ===== */
 
-/* La cabecera y las tarjetas forman una sola pantalla: el body ocupa todo el alto
-   y se reparte en columna (cabecera arriba, tarjetas debajo) */
 .pagina-panel {
     height: 100vh;
     display: flex;
@@ -458,8 +398,6 @@ body > .mensaje-aviso {
     color: var(--texto-secundario);
 }
 
-/* flex: 1 hace que esta zona se estire hasta el final de la pantalla,
-   y la rejilla la reparte en 4 columnas iguales */
 .zonas {
     flex: 1;
     display: grid;
@@ -468,8 +406,6 @@ body > .mensaje-aviso {
     padding: 24px;
 }
 
-/* Base de las 4 tarjetas. El color lo ponen las variables --neon y --neon-suave,
-   que cambia cada clase de color (tarjeta-pc, tarjeta-consola...) */
 .tarjeta-zona {
     position: relative;
     display: flex;
@@ -479,26 +415,20 @@ body > .mensaje-aviso {
     gap: 12px;
     padding: 32px 20px;
     text-align: center;
-    /* Efecto cristal: fondo oscuro semitransparente que deja ver el vídeo detrás.
-       Sin backdrop-filter: blur() a propósito. Desenfocar 4 tarjetas tan grandes sobre un vídeo
-       obligaba a recalcular el desenfoque en cada fotograma y el panel iba a tirones. */
     background-color: rgba(13, 17, 23, 0.7);
     border: 2px solid var(--neon);
     border-radius: var(--radio);
     color: var(--texto);
     text-decoration: none;
-    /* Dos sombras: una de brillo por fuera y otra por dentro, como un tubo de neón */
     box-shadow: 0 0 15px var(--neon-suave), inset 0 0 25px var(--neon-suave);
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
-/* Al pasar el ratón la tarjeta sube un poco y el neón brilla más */
 .tarjeta-zona:hover {
     transform: translateY(-6px);
     box-shadow: 0 0 35px var(--neon), inset 0 0 40px var(--neon-suave);
 }
 
-/* Esquinas decorativas tipo "pantalla de consola": arriba a la izquierda y abajo a la derecha */
 .tarjeta-zona::before,
 .tarjeta-zona::after {
     content: "";
@@ -542,7 +472,6 @@ body > .mensaje-aviso {
     font-weight: bold;
 }
 
-/* Colores de cada zona: solo cambian las dos variables del neón */
 .tarjeta-pc {
     --neon: var(--color-pc);
     --neon-suave: rgba(0, 210, 255, 0.25);
@@ -563,7 +492,7 @@ body > .mensaje-aviso {
     --neon-suave: rgba(230, 237, 243, 0.15);
 }
 
-/* ---------- HISTORIAL GLOBAL ---------- */
+/* ===== HISTORIAL GLOBAL ===== */
 
 .pagina-historico {
     min-height: 100vh;
@@ -646,14 +575,13 @@ body > .mensaje-aviso {
     align-items: center;
     justify-content: space-between;
     background-color: #0d1117;
-    /* Mismo tamaño en todas partes (las variables están arriba, en la sección SALA) */
     width: var(--ancho-puesto);
     height: var(--alto-puesto);
     padding: 8px;
     border-radius: 8px;
     text-decoration: none;
     position: relative;
-    transition: all 0.3s ease; /* Efecto smooth al deslizar/interactuar */
+    transition: all 0.3s ease;
 }
 
 .tarjeta-puesto:hover {
@@ -677,7 +605,6 @@ body > .mensaje-aviso {
     letter-spacing: 1px;
 }
 
-/* Hueco para la imagen: todo lo que sobra entre el estado y el nombre (flex: 1) */
 .contenedor-imagen {
     position: relative;
     width: 100%;
@@ -686,8 +613,6 @@ body > .mensaje-aviso {
     margin: 4px 0;
 }
 
-/* La imagen rellena el hueco sin empujar la tarjeta (position: absolute) y sin deformarse
-   (object-fit: contain). Como la tarjeta tiene alto fijo, el PC nunca sale enorme. */
 .imagen-puesto {
     position: absolute;
     top: 0;
@@ -698,16 +623,13 @@ body > .mensaje-aviso {
     opacity: 0.85;
     transition: all 0.3s ease;
 }
-
 .tarjeta-puesto:hover .imagen-puesto {
     transform: scale(1.06);
     opacity: 1;
 }
 
-/* Los estados van con .tarjeta-puesto delante para que solo afecten a las tarjetas de los PCs:
-   el dashboard también usa estado-libre / estado-ocupado en los contadores y ahí solo cambian el color del texto */
 
-/* --- ESTADO: LIBRE (LÍNEA VERDE NEÓN) --- */
+/* ===== ESTADO: LIBRE (LÍNEA VERDE NEÓN) ===== */
 .tarjeta-puesto.estado-libre {
     border: 1px solid rgba(0, 255, 136, 0.2);
     border-top: 3px solid var(--color-libre);
@@ -720,7 +642,6 @@ body > .mensaje-aviso {
     text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
 }
 
-/* El PC de la imagen proyecta brillo verde */
 .estado-libre .imagen-puesto {
     filter: drop-shadow(0 4px 6px rgba(0, 255, 136, 0.3));
 }
@@ -735,7 +656,7 @@ body > .mensaje-aviso {
     filter: drop-shadow(0 6px 12px rgba(0, 255, 136, 0.6));
 }
 
-/* --- ESTADO: OCUPADO (LÍNEA ROJA NEÓN) --- */
+/* ===== ESTADO: OCUPADO (LÍNEA ROJA NEÓN) ===== */
 .tarjeta-puesto.estado-ocupado {
     border: 1px solid rgba(255, 70, 85, 0.2);
     border-top: 3px solid var(--color-ocupado);
@@ -748,7 +669,6 @@ body > .mensaje-aviso {
     text-shadow: 0 0 8px rgba(255, 70, 85, 0.6);
 }
 
-/* El PC de la imagen proyecta brillo rojo */
 .estado-ocupado .imagen-puesto {
     filter: drop-shadow(0 4px 6px rgba(255, 70, 85, 0.3));
 }
@@ -763,7 +683,12 @@ body > .mensaje-aviso {
     filter: drop-shadow(0 6px 12px rgba(255, 70, 85, 0.6));
 }
 
-/* Pantallita del indicador, dibujada con un borde (verde o rojo según el estado) */
+.tarjeta-puesto[data-tipo="vip"] .imagen-puesto,
+.tarjeta-puesto[data-tipo="vip"]:hover .imagen-puesto {
+    mix-blend-mode: lighten;
+    filter: none;
+}
+
 .icono-pantalla {
     width: 11px;
     height: 8px;
@@ -775,7 +700,7 @@ body > .mensaje-aviso {
     border-color: var(--color-ocupado);
 }
 
-/* ---------- BOTONES DE CABECERA (Ver Ocupados, Historial de Sala...) ---------- */
+/* ===== BOTONES DE CABECERA (VER OCUPADOS, HISTORIAL DE SALA...) ===== */
 
 .boton-cabecera {
     padding: 8px 14px;
@@ -792,14 +717,13 @@ body > .mensaje-aviso {
     color: var(--bg-principal);
 }
 
-/* En sala.php el botón de historial y el desplegable van juntos a la derecha */
 .cabecera-acciones {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-/* ---------- HISTORIAL: formulario de filtros ---------- */
+/* ===== HISTORIAL: FORMULARIO DE FILTROS ===== */
 
 .caja-filtros {
     display: flex;
@@ -833,7 +757,6 @@ body > .mensaje-aviso {
     border: 1px solid var(--borde);
     border-radius: 8px;
     color: var(--texto);
-    /* Para que el calendario del input date salga en oscuro */
     color-scheme: dark;
 }
 
@@ -864,13 +787,12 @@ body > .mensaje-aviso {
     color: var(--texto-secundario);
 }
 
-/* ---------- OCUPADOS ---------- */
+/* ===== OCUPADOS ===== */
 
 .vista-ocupados {
     padding: 24px;
 }
 
-/* Mismas tarjetas y mismo tamaño que en la sala, una al lado de otra */
 .lista-ocupados {
     display: flex;
     flex-wrap: wrap;
@@ -883,11 +805,6 @@ body > .mensaje-aviso {
     text-align: center;
 }
 
-/* En la sala solo las ocupadas tienen "Ocupado por...". Si esa línea ocupara sitio, en esas
-   tarjetas la imagen se encogería y el nombre subiría, y los nombres de una fila no quedarían
-   alineados. Por eso todas las tarjetas de la sala reservan abajo el hueco de la línea
-   (padding-bottom) y la línea se coloca en ese hueco con position: absolute.
-   En ocupados.php no se aplica: allí todas las tarjetas llevan sus líneas */
 .vista-puestos .tarjeta-puesto {
     padding-bottom: 22px;
 }
@@ -897,21 +814,17 @@ body > .mensaje-aviso {
     left: 8px;
     right: 8px;
     bottom: 6px;
-    /* Un nombre largo se corta con "..." en vez de salirse de la tarjeta */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* ---------- PANEL: logo, cabecera de cristal e iconos ---------- */
+/* ===== PANEL: LOGO, CABECERA DE CRISTAL E ICONOS ===== */
 
-/* En el panel, la cabecera también es semitransparente para que se vea el vídeo detrás
-   (sin blur, por el mismo motivo que las tarjetas) */
 .pagina-panel .cabecera {
     background-color: rgba(13, 17, 23, 0.75);
 }
 
-/* Logo a la izquierda y el bloque de título + bienvenida a su derecha */
 .cabecera-marca {
     display: flex;
     align-items: center;
@@ -924,8 +837,6 @@ body > .mensaje-aviso {
     filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.4));
 }
 
-/* Iconos de FontAwesome encima del título de cada tarjeta.
-   currentColor = el color de la propia letra, así el brillo sale del mismo color que el icono */
 .icono-dashboard {
     font-size: 4rem;
     text-shadow: 0 0 18px currentColor;
@@ -947,9 +858,8 @@ body > .mensaje-aviso {
     color: var(--texto);
 }
 
-/* ---------- OCUPADOS: botón de cierre de local ---------- */
+/* ===== OCUPADOS: BOTÓN DE CIERRE DE LOCAL ===== */
 
-/* Rojo porque es una acción "peligrosa": libera todos los puestos */
 .boton-cierre {
     padding: 8px 14px;
     background-color: rgba(255, 70, 85, 0.1);
@@ -968,14 +878,11 @@ body > .mensaje-aviso {
     box-shadow: 0 0 15px rgba(255, 70, 85, 0.5);
 }
 
-/* Mensajes que PHP deja en la página para que js/script.js los enseñe en un SweetAlert */
 .oculto {
     display: none;
 }
 
-/* ---------- SWEETALERT: borde y brillo del color de la sala ---------- */
-/* js/script.js le pone al modal la clase swal-sala-pc, swal-sala-consola o swal-sala-vip
-   según el data-tipo de la tarjeta pulsada */
+/* ===== SWEETALERT: BORDE Y BRILLO DEL COLOR DE LA SALA ===== */
 
 .swal-sala-pc {
     border: 2px solid var(--color-pc);
@@ -992,21 +899,17 @@ body > .mensaje-aviso {
     box-shadow: 0 0 30px rgba(245, 158, 11, 0.45);
 }
 
-/* Rojo para el aviso de cierre de local y para los errores (Acceso denegado) */
 .swal-peligro {
     border: 2px solid var(--color-ocupado);
     box-shadow: 0 0 30px rgba(255, 70, 85, 0.45);
 }
 
-/* Verde para los avisos de éxito */
 .swal-exito {
     border: 2px solid var(--color-libre);
     box-shadow: 0 0 30px rgba(0, 255, 136, 0.35);
 }
 
-/* ---------- INDICADOR "QUIÉN ESTÁ OPERANDO" (sala, ocupados e histórico) ---------- */
-/* Va dentro de .cabecera-acciones, que es el bloque de la derecha de la cabecera
-   (la cabecera reparte sus hijos con justify-content: space-between, así que el último queda a la derecha) */
+/* ===== INDICADOR "QUIÉN ESTÁ OPERANDO" (SALA, OCUPADOS E HISTÓRICO) ===== */
 .usuario-activo {
     display: flex;
     align-items: center;
@@ -1016,16 +919,15 @@ body > .mensaje-aviso {
     border-radius: 20px;
     color: var(--texto-secundario);
     font-size: 0.85rem;
-    white-space: nowrap;      /* que el nombre no se parta en dos líneas */
+    white-space: nowrap;
 }
 
 .usuario-activo i {
-    color: var(--color-libre);   /* icono verde: sesión activa */
+    color: var(--color-libre);
 }
 
-/* ---------- PANEL: lista de salas dentro de cada tarjeta de zona ---------- */
+/* ===== PANEL: LISTA DE SALAS DENTRO DE CADA TARJETA DE ZONA ===== */
 
-/* La parte de arriba de la tarjeta (icono, título y contadores) es el enlace a la zona */
 .enlace-zona {
     display: flex;
     flex-direction: column;
@@ -1035,7 +937,6 @@ body > .mensaje-aviso {
     text-decoration: none;
 }
 
-/* Lista de salas: sin viñetas y a todo el ancho de la tarjeta */
 .lista-salas {
     list-style: none;
     width: 100%;
@@ -1043,7 +944,6 @@ body > .mensaje-aviso {
     border-top: 1px solid var(--neon-suave);
 }
 
-/* Cada sala es una fila: nombre a la izquierda y números a la derecha */
 .lista-salas a {
     display: flex;
     justify-content: space-between;
@@ -1062,7 +962,6 @@ body > .mensaje-aviso {
     color: var(--texto);
 }
 
-/* Si el nombre es largo se corta con "..." en vez de romper la tarjeta */
 .nombre-sala {
     overflow: hidden;
     white-space: nowrap;
@@ -1076,9 +975,8 @@ body > .mensaje-aviso {
     font-weight: bold;
 }
 
-/* ---------- SALA: capacidad total y de cada bloque ---------- */
+/* ===== SALA: CAPACIDAD TOTAL Y DE CADA BLOQUE ===== */
 
-/* Título de la sala con la capacidad debajo */
 .titulo-sala {
     display: flex;
     flex-direction: column;
@@ -1086,7 +984,6 @@ body > .mensaje-aviso {
     gap: 6px;
 }
 
-/* "Capacidad total: ..." en una píldora con borde neón del color de la zona */
 .badge-capacidad {
     padding: 4px 12px;
     border: 1px solid var(--color-pc);
@@ -1107,17 +1004,12 @@ body > .mensaje-aviso {
     box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
 }
 
-/* Capacidad de cada bloque, al lado de "ARENA SQUAD", "ZONA DÚO"... sin mayúsculas */
 .capacidad-bloque {
     text-transform: none;
     letter-spacing: 0;
     color: var(--texto-secundario);
 }
 
-/* Título de cada módulo dúo ("Módulo Dúo 1 (Cap. 2 puestos) — 2/2 libres") encima del borde
-   punteado, como la leyenda de un fieldset. Con position: absolute no ocupa sitio en la rejilla:
-   top: 0 lo pone en la línea del borde y translateY(-50%) lo sube la mitad de su alto.
-   El fondo igual que la página tapa el trozo de borde que queda detrás del texto. */
 .titulo-modulo {
     position: absolute;
     top: 0;
@@ -1127,16 +1019,14 @@ body > .mensaje-aviso {
     background-color: var(--bg-principal);
     font-size: 0.75rem;
     color: var(--texto-secundario);
-    /* Siempre en una línea; si en un móvil no cabe, se corta con "..." en vez de pisar las tarjetas */
     white-space: nowrap;
     max-width: calc(100% - 24px);
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* ---------- HISTÓRICO: barra de resumen por sala ---------- */
+/* ===== HISTÓRICO: BARRA DE RESUMEN POR SALA ===== */
 
-/* Una "pastilla" por sala con su total; si no caben en una fila, bajan a la siguiente */
 .resumen-salas {
     display: flex;
     flex-wrap: wrap;

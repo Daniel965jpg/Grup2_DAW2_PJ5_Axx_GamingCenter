@@ -1,7 +1,6 @@
 <?php
 // VISTA: PANEL DE CONTROL
-// Página principal después del login: una tarjeta por zona (PC, consolas, VIP) con sus
-// puestos libres y ocupados, y otra para el histórico.
+// Página principal después del login: una tarjeta por zona con sus puestos libres y ocupados.
 
 session_start();
 
@@ -16,19 +15,19 @@ require_once '../includes/funciones.php';
 $mi_id = $_SESSION['usuario'];
 
 try {
-    // Nombre y rol del usuario para la bienvenida
+    // 1. Nombre y rol del usuario para la bienvenida
     $sql = "SELECT nom_real, rol FROM usuarios WHERE id_usuario = ?";
     $stmt = $conexion->prepare($sql);
     $stmt->execute([$mi_id]);
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Cuántos puestos hay en un estado dentro de las salas de un tipo.
-    // Se prepara una vez fuera y se ejecuta dentro del foreach para cada zona.
+    // 2. Puestos libres y ocupados de cada zona: preparamos la consulta una vez
+    //    y la ejecutamos dentro del foreach para pc, consola y vip
     $sql = "SELECT COUNT(*) AS total FROM modulos
             WHERE estado = ? AND id_sala IN (SELECT id_sala FROM salas WHERE tipo = ?)";
     $stmt_contar = $conexion->prepare($sql);
 
-    // Queda así: $resumen['pc']['libres'], $resumen['vip']['ocupados'], etc.
+    // Guardamos los números en $resumen[zona][libres] y $resumen[zona][ocupados]
     $tipos = ['pc', 'consola', 'vip'];
     $resumen = [];
     foreach ($tipos as $tipo) {
@@ -41,16 +40,16 @@ try {
         $resumen[$tipo]['ocupados'] = $fila['total'];
     }
 
-    // Lista de salas de cada zona con su capacidad (número de puestos) y sus puestos libres
+    // 3. Salas del local, para la lista de cada tarjeta
     $stmt = $conexion->prepare("SELECT id_sala, nombre, tipo FROM salas ORDER BY id_sala");
     $stmt->execute();
     $lista_salas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Se preparan fuera y se ejecutan para cada sala dentro del foreach
+    // 4. Puestos totales y libres de cada sala (preparadas fuera del foreach)
     $stmt_puestos = $conexion->prepare("SELECT COUNT(*) AS puestos FROM modulos WHERE id_sala = ?");
     $stmt_libres = $conexion->prepare("SELECT COUNT(*) AS libres FROM modulos WHERE id_sala = ? AND estado = 'lliure'");
 
-    // Queda así: $salas_zona['pc'] = [sala 1, sala 2...], cada una con sus números
+    // Repartimos las salas por zona: $salas_zona[pc], $salas_zona[consola]...
     $salas_zona = ['pc' => [], 'consola' => [], 'vip' => []];
     foreach ($lista_salas as $sala) {
         $stmt_puestos->execute([$sala['id_sala']]);
@@ -80,10 +79,12 @@ try {
     <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body class="pagina-panel">
+    <!-- Vídeo de fondo -->
     <video id="bg-video" class="video-fondo" autoplay loop muted playsinline>
         <source src="../img/video-fondo-gamingcenter.mp4" type="video/mp4">
     </video>
 
+    <!-- Cabecera: logo, bienvenida y botones -->
     <header class="cabecera">
         <div class="cabecera-marca">
             <img src="../img/logo-hidden-mini.png" alt="Hidden Arena" class="logo-cabecera">
@@ -99,7 +100,7 @@ try {
     </header>
 
     <?php
-    // Por ejemplo, cuando sala.php nos devuelve aquí porque la zona no tiene salas
+    // Error que nos deja sala.php si la zona no tiene salas
     if (isset($_SESSION['error'])) {
         echo "<div class='mensaje-aviso mensaje-aviso-error'>" . $_SESSION['error'] . "</div>";
         unset($_SESSION['error']);
@@ -107,8 +108,8 @@ try {
     ?>
 
     <main class="zonas">
-        <!-- Cada tarjeta es un div (un enlace no puede ir dentro de otro enlace):
-             arriba el enlace a la zona y debajo la lista de sus salas, cada una con su enlace -->
+        <!-- Tarjetas de zona: arriba el enlace a la zona y debajo la lista de sus salas.
+             Son div y no a porque un enlace no puede ir dentro de otro enlace -->
         <div class="tarjeta-zona tarjeta-pc">
             <a href="sala.php?tipo=pc" class="enlace-zona">
                 <i class="fa-solid fa-computer icono-dashboard pc-neon"></i>
@@ -175,6 +176,7 @@ try {
             </ul>
         </div>
 
+        <!-- Tarjeta del histórico -->
         <a href="historico.php" class="tarjeta-zona tarjeta-historico">
             <i class="fa-solid fa-clock-rotate-left icono-dashboard historico-neon"></i>
             <h2>Histórico</h2>

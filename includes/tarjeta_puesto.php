@@ -1,14 +1,10 @@
 <?php
-// TROZO COMÚN: TARJETA DE UN PUESTO
-// La incluyen sala.php y ocupados.php dentro de su foreach, así no repetimos este HTML.
-// Usa la variable $puesto del foreach, que cada vista deja preparada con:
-// enlace, accion, tipo_sala, clase_estado, texto_estado, imagen, nombre y ocupado_por
-// (y en ocupados.php también sala).
-// data-tipo es para script.js: el SweetAlert de confirmar sale con el color de la zona.
+// TARJETA DE UN PUESTO
+// La incluyen sala.php y ocupados.php dentro de su foreach, con $puesto ya preparado.
 
-/** @var array $puesto Viene del foreach de sala.php u ocupados.php */
+// Al pulsar, script.js pide confirmación; data-tipo le da el color de la zona
 ?>
-<a href="<?php echo $puesto['enlace']; ?>" title="<?php echo $puesto['accion'] . ' ' . htmlspecialchars($puesto['nombre']); ?>" data-tipo="<?php echo $puesto['tipo_sala']; ?>" class="tarjeta-puesto <?php echo $puesto['clase_estado']; ?>">
+<a href="<?php echo $puesto['enlace']; ?>" title="<?php echo $puesto['accion'] . ' ' . htmlspecialchars($puesto['nombre']); ?>" data-tipo="<?php echo $puesto['tipo_sala']; ?>" class="tarjeta-puesto <?php echo $puesto['clase_estado']; ?>" onclick="return confirmarCambio(this)">
     <div class="indicador-estado">
         <span class="icono-pantalla"></span>
         <span class="texto-estado"><?php echo $puesto['texto_estado']; ?></span>

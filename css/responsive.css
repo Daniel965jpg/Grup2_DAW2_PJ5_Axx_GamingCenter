@@ -1,19 +1,10 @@
-/* =========================================================
-   GAMING CENTER - Diseño responsive
-   styles.css tiene el diseño de escritorio. Aquí solo van los cambios para pantallas
-   más pequeñas. Se carga DESPUÉS de styles.css, así que si una regla de aquí choca con
-   una de allí, gana esta.
-   Puntos de ruptura:
-     - 1024px: tablets y portátiles pequeños
-     - 768px:  móviles grandes y tablets en vertical
-     - 480px:  móviles pequeños
-   ========================================================= */
+/* ===== RESPONSIVE: CAMBIOS PARA PANTALLAS MÁS PEQUEÑAS ===== */
 
 
-/* ---------- TABLETS Y PANTALLAS MEDIANAS (hasta 1024px) ---------- */
+/* ===== TABLETS Y PANTALLAS MEDIANAS (hasta 1024px) ===== */
 @media (max-width: 1024px) {
 
-    /* CABECERAS: si no caben en una línea, los elementos bajan a la siguiente */
+    /* Cabeceras */
     .cabecera {
         flex-wrap: wrap;
         gap: 12px 16px;
@@ -25,13 +16,12 @@
         gap: 10px;
     }
 
-    /* PANEL: en escritorio mide justo una pantalla; aquí puede crecer y hacer scroll */
+    /* Panel */
     .pagina-panel {
         height: auto;
         min-height: 100vh;
     }
 
-    /* Las 4 tarjetas pasan de una fila de 4 a una cuadrícula de 2x2 */
     .zonas {
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
@@ -42,8 +32,7 @@
         min-height: 260px;
     }
 
-    /* SALA: la cabecera aquí ocupa dos líneas, así que se resta un poco más de alto
-       al repartirlo entre las filas de tarjetas (en styles.css son 275px y 235px) */
+    /* Sala */
     .vista-puestos.filas-3 {
         --alto-puesto: clamp(110px, calc((100vh - 325px) / 3), 320px);
     }
@@ -55,10 +44,10 @@
 }
 
 
-/* ---------- MÓVILES Y TABLETS EN VERTICAL (hasta 768px) ---------- */
+/* ===== MÓVILES Y TABLETS EN VERTICAL (hasta 768px) ===== */
 @media (max-width: 768px) {
 
-    /* CABECERAS: todo en columna y centrado */
+    /* Cabeceras */
     .cabecera {
         flex-direction: column;
         align-items: stretch;
@@ -87,8 +76,6 @@
         justify-content: center;
     }
 
-    /* Botones de la cabecera (Ver Ocupados, Historial, Cierre de Local...) a todo el ancho
-       y más altos, para pulsarlos bien con el dedo */
     .boton-cabecera,
     .boton-salir,
     .boton-cierre {
@@ -97,7 +84,7 @@
         text-align: center;
     }
 
-    /* Desplegable de salas: la etiqueta y el select ocupan todo el ancho */
+    /* Desplegable de salas */
     .selector-sala {
         justify-content: center;
     }
@@ -107,7 +94,7 @@
         min-height: 44px;
     }
 
-    /* LOGIN: la caja ocupa el 90% del ancho y el logo es un poco más pequeño */
+    /* Login */
     .login-panel {
         width: 90%;
         padding: 24px 20px 20px;
@@ -117,7 +104,7 @@
         width: 180px;
     }
 
-    /* PANEL: las 4 tarjetas una debajo de otra, más bajitas para que el scroll sea cómodo */
+    /* Panel */
     .zonas {
         grid-template-columns: 1fr;
         gap: 16px;
@@ -137,9 +124,7 @@
         font-size: 1.3rem;
     }
 
-    /* SALA y OCUPADOS: tarjetas de 150px para que quepan 2 por fila en un móvil
-       (también dentro de una caja dúo, que tiene su borde y su relleno) y centradas.
-       En la sala hay que repetir las clases filas-1/2/3 porque allí el tamaño se calcula aparte */
+    /* Sala y ocupados */
     :root,
     .vista-puestos.filas-1,
     .vista-puestos.filas-2,
@@ -153,7 +138,6 @@
         padding: 12px 16px;
     }
 
-    /* En el móvil la sala usa todo el ancho, para que las tarjetas se centren como antes */
     .vista-puestos {
         align-self: stretch;
     }
@@ -171,7 +155,7 @@
     .grupo-formato {
         margin-bottom: 20px;
     }
-    /* FILTROS (histórico y ocupados): uno debajo de otro y a todo el ancho */
+    /* Filtros */
     .caja-filtros {
         flex-direction: column;
         align-items: stretch;
@@ -195,9 +179,7 @@
         text-align: center;
     }
 
-    /* HISTÓRICO: menos margen alrededor y celdas más compactas.
-       Si aun así la tabla no cabe, su contenedor (.tabla-historico-contenedor, con overflow-x: auto)
-       deja moverla de lado sin que se rompa el ancho de la página */
+    /* Histórico */
     .contenido-historico {
         padding: 16px 12px;
     }
@@ -214,10 +196,10 @@
 }
 
 
-/* ---------- MÓVILES PEQUEÑOS (hasta 480px) ---------- */
+/* ===== MÓVILES PEQUEÑOS (hasta 480px) ===== */
 @media (max-width: 480px) {
 
-    /* LOGIN: menos margen para que quepa entera sin scroll */
+    /* Login */
     .pagina-login {
         padding: 12px;
     }
@@ -234,7 +216,7 @@
         margin-bottom: 14px;
     }
 
-    /* SALA y OCUPADOS: siguen 2 por fila, con un poco menos de hueco entre tarjetas */
+    /* Sala y ocupados */
     .caja-pareja {
         gap: 8px;
     }
@@ -243,7 +225,7 @@
         font-size: 0.95rem;
     }
 
-    /* HISTÓRICO: letra un poco más pequeña en la tabla */
+    /* Histórico */
     .tabla-historico th,
     .tabla-historico td {
         padding: 8px 10px;
@@ -252,29 +234,26 @@
 }
 
 
-/* ---------- Capacidad (panel y sala) en pantallas pequeñas ---------- */
+/* ===== CAPACIDAD (PANEL Y SALA) EN PANTALLAS PEQUEÑAS ===== */
 @media (max-width: 768px) {
 
-    /* La píldora de capacidad puede partirse en dos líneas */
     .badge-capacidad {
         white-space: normal;
     }
 
-    /* En el panel ya no hace falta el alto mínimo: la lista de salas da altura de sobra */
     .tarjeta-zona {
         min-height: 0;
     }
 }
 
-/* En el móvil la caja del módulo es más estrecha: letra del título un poco más pequeña */
+/* ===== MÓVILES PEQUEÑOS: TÍTULO DEL MÓDULO DÚO (hasta 480px) ===== */
 @media (max-width: 480px) {
     .titulo-modulo {
         font-size: 0.7rem;
     }
 }
 
-/* Móviles muy estrechos (320-360px): tarjetas más pequeñas para que sigan cabiendo 2 por fila,
-   también dentro de las cajas dúo */
+/* ===== MÓVILES MUY ESTRECHOS (hasta 360px) ===== */
 @media (max-width: 360px) {
     :root,
     .vista-puestos.filas-1,

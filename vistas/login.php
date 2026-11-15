@@ -1,10 +1,10 @@
 <?php
 // VISTA: LOGIN
-// Formulario de acceso del personal. Envía los datos a procs/login_proc.php.
+// Formulario de acceso del personal; envía los datos a procs/login_proc.php.
 
 session_start();
 
-// Si ya ha entrado, directo al panel
+// Si ya tiene la sesión iniciada, lo mandamos directamente al panel
 if (isset($_SESSION['usuario'])) {
     header('Location: dashboard.php');
     exit();
@@ -21,11 +21,12 @@ if (isset($_SESSION['usuario'])) {
     <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body class="pagina-login">
-    <!-- muted hace falta para que el navegador deje reproducirlo solo -->
+    <!-- Vídeo de fondo -->
     <video id="bg-video" class="video-fondo" autoplay loop muted playsinline>
         <source src="../img/video-fondo-gamingcenter.mp4" type="video/mp4">
     </video>
 
+    <!-- Caja del login: logo, mensaje de error y formulario -->
     <main class="login-panel">
         <div class="login-cabecera">
             <span class="login-estado">● Sistema en línea</span>
@@ -34,14 +35,14 @@ if (isset($_SESSION['usuario'])) {
         </div>
 
         <?php
-        // Mensaje de error de una sola vez: se enseña y se borra
+        // Si el proceso nos ha dejado un error, lo enseñamos una vez y lo borramos
         if (isset($_SESSION['error'])) {
             echo "<div class='mensaje-aviso mensaje-aviso-error'>" . $_SESSION['error'] . "</div>";
             unset($_SESSION['error']);
         }
         ?>
 
-        <!-- novalidate quita los avisos del navegador para que salgan los nuestros (script.js) -->
+        <!-- Formulario: script.js comprueba los campos antes de enviarlo -->
         <form class="login-formulario" action="../procs/login_proc.php" method="POST" id="formulario-login" novalidate>
             <div class="campo">
                 <label for="usuario">Usuario</label>
@@ -58,7 +59,7 @@ if (isset($_SESSION['usuario'])) {
             <button type="submit" class="boton-login">Iniciar sesión</button>
         </form>
 
-        <!-- Los tres colores de las salas, como adorno -->
+        <!-- Pie decorativo con los colores de las salas -->
         <div class="login-pie">
             <span class="punto punto-pc"></span>
             <span class="punto punto-consola"></span>

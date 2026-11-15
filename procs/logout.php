@@ -1,6 +1,6 @@
 <?php
 // PROCESO: CERRAR SESIÓN
-// Borra todo lo guardado en la sesión y vuelve al login.
+// Se llama desde el botón "Cerrar sesión" del panel.
 
 session_start();
 session_unset();

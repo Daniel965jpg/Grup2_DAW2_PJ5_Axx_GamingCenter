@@ -1,7 +1,6 @@
 <?php
 // PROCESO: CIERRE DE LOCAL
-// Se llama desde el botón "Cierre de Local" de ocupados.php (después de confirmarlo).
-// Libera todos los puestos, los haya ocupado quien sea. Solo lo puede hacer un admin.
+// Se llama desde el botón "Cierre de Local" de ocupados.php y libera todos los puestos.
 
 session_start();
 
@@ -14,7 +13,8 @@ require_once '../bd/conexion.php';
 
 $mi_id = $_SESSION['usuario'];
 
-// El rol se mira en la BD: esconder el botón no basta, cualquiera podría escribir esta URL
+// Solo puede cerrar el local el admin. Miramos el rol en la BD porque esconder
+// el botón no basta: cualquiera podría escribir esta URL a mano
 try {
     $stmt = $conexion->prepare("SELECT rol FROM usuarios WHERE id_usuario = ?");
     $stmt->execute([$mi_id]);
@@ -30,17 +30,17 @@ if (!$usuario || $usuario['rol'] != 'admin') {
     exit();
 }
 
-// Dos UPDATE que van juntos: si falla uno, se deshace el otro
+// Dos UPDATE que van juntos, así que usamos una transacción:
+// si falla uno, se deshace el otro
 try {
     $conexion->beginTransaction();
 
-    // Cerramos todas las ocupaciones que seguían abiertas
+    // Cerramos las ocupaciones abiertas y contamos cuántas eran para el mensaje
     $stmt1 = $conexion->prepare("UPDATE ocupaciones SET fecha_fin = NOW() WHERE fecha_fin IS NULL");
     $stmt1->execute();
-    // rowCount() = cuántas filas ha cambiado, para el mensaje final
     $total_cerradas = $stmt1->rowCount();
 
-    // Y todos los puestos ocupados pasan a libres
+    // Y dejamos libres todos los puestos ocupados
     $stmt2 = $conexion->prepare("UPDATE modulos SET estado = 'lliure' WHERE estado = 'ocupat'");
     $stmt2->execute();
 

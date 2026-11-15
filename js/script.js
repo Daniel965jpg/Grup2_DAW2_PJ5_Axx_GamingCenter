@@ -1,14 +1,13 @@
-// JS DEL PROYECTO (login.php, sala.php y ocupados.php)
-// Cada bloque comprueba antes si su elemento está en la página: getElementById devuelve null
-// si no existe, y sin ese if el script daría error y dejaría de funcionar en las otras páginas.
+// JS DEL PROYECTO
+// Lo cargan login.php, sala.php y ocupados.php; cada parte mira antes si su elemento existe
 
-// Colores del modo oscuro para todos los SweetAlert
+// Colores oscuros que usamos en todos los SweetAlert
 const FONDO_MODAL = "#161b22";
 const TEXTO_MODAL = "#e6edf3";
 const COLOR_CANCELAR = "#30363d";
 
 
-// ---------- 1. LOGIN: no dejar enviar el formulario con campos vacíos ----------
+// Login: no dejamos enviar el formulario con campos vacíos
 const formularioLogin = document.getElementById("formulario-login");
 if (formularioLogin != null) {
     formularioLogin.onsubmit = validarLogin;
@@ -16,9 +15,9 @@ if (formularioLogin != null) {
     document.getElementById("contrasena").onblur = validarContrasena;
 }
 
-// Si devuelve false el formulario no se envía
+// Si devolvemos false, el formulario no se envía
 function validarLogin() {
-    // Validamos los dos para que salgan los dos avisos a la vez
+    // Validamos los dos campos para que salgan los dos avisos a la vez
     const usuarioValido = validarUsuario();
     const contrasenaValida = validarContrasena();
 
@@ -41,7 +40,7 @@ function validarUsuario() {
     const valor = document.getElementById("usuario").value;
     const error = document.getElementById("usuario-error");
 
-    // Vacío o solo espacios
+    // Vacío o solo con espacios
     if (valor == null || valor.length == 0 || /^\s+$/.test(valor)) {
         error.textContent = "Falta escribir el usuario.";
         return false;
@@ -77,7 +76,7 @@ function avisoCampoVacio(nombreCampo) {
 }
 
 
-// ---------- 2. SALA: al cambiar el desplegable se carga la otra sala ----------
+// Sala: al cambiar el desplegable cargamos la otra sala
 const formularioSala = document.getElementById("formulario-sala");
 if (formularioSala != null) {
     document.getElementById("id_sala").onchange = cambiarSala;
@@ -88,7 +87,7 @@ function cambiarSala() {
 }
 
 
-// ---------- 3. OCUPADOS: al cambiar un filtro se recarga la página filtrada ----------
+// Ocupados: al cambiar un filtro recargamos la página filtrada
 const formularioFiltros = document.getElementById("formulario-filtros");
 if (formularioFiltros != null) {
     document.getElementById("filtro-sala").onchange = enviarFiltros;
@@ -100,15 +99,8 @@ function enviarFiltros() {
 }
 
 
-// ---------- 4. SALA y OCUPADOS: confirmar antes de ocupar o liberar ----------
-// Hay muchas tarjetas, así que con un for le ponemos el evento a cada una.
-// getElementsByClassName funciona como getElementsByName, pero buscando por la clase.
-const tarjetas = document.getElementsByClassName("tarjeta-puesto");
-for (let i = 0; i < tarjetas.length; i++) {
-    tarjetas[i].onclick = confirmarCambio;
-}
-
-// Color del botón según la zona: azul PC, morado consolas, dorado VIP
+// Tarjetas: pedimos confirmación antes de ocupar o liberar
+// Color del botón según la zona: azul PC, morado consolas y dorado VIP
 function colorSala(tipo) {
     let color;
     if (tipo == "vip") {
@@ -121,10 +113,9 @@ function colorSala(tipo) {
     return color;
 }
 
-// "this" es la tarjeta pulsada. Devolvemos false para que el enlace no se abra todavía:
-// solo se abre si se confirma en el SweetAlert
-function confirmarCambio() {
-    const enlace = this;
+// La tarjeta llega por parámetro (onclick="return confirmarCambio(this)") y devolvemos false
+// para que el enlace solo se abra si se confirma en el SweetAlert
+function confirmarCambio(enlace) {
     const tipo = enlace.getAttribute("data-tipo");
 
     Swal.fire({
@@ -138,14 +129,14 @@ function confirmarCambio() {
         color: TEXTO_MODAL,
         confirmButtonColor: colorSala(tipo),
         cancelButtonColor: COLOR_CANCELAR,
-        // swal-sala-pc, swal-sala-consola o swal-sala-vip: borde del color de la zona (en el CSS)
+        // Borde del color de la zona (swal-sala-pc, swal-sala-consola o swal-sala-vip)
         customClass: {
             popup: "swal-sala-" + tipo
         },
-        // Sin esto SweetAlert cambia la altura de la página y la sala se encoge
+        // Sin esto SweetAlert cambia la altura de la página
         heightAuto: false
     }).then(function (resultado) {
-        // Se ejecuta al cerrar el modal: solo seguimos si se ha pulsado "Sí"
+        // Al cerrar el modal, solo seguimos el enlace si se ha pulsado "Sí"
         if (resultado.isConfirmed) {
             window.location.href = enlace.href;
         }
@@ -155,7 +146,7 @@ function confirmarCambio() {
 }
 
 
-// ---------- 5. OCUPADOS: aviso rojo antes del cierre de local ----------
+// Cierre de local: aviso en rojo antes de liberar todo
 const botonCierre = document.getElementById("boton-cierre");
 if (botonCierre != null) {
     botonCierre.onclick = confirmarCierre;
@@ -189,8 +180,8 @@ function confirmarCierre() {
 }
 
 
-// ---------- 6. Mensajes del servidor (error o éxito) en un SweetAlert ----------
-// PHP deja el texto en un div oculto (aviso-error o aviso-exito) y aquí lo enseñamos
+// Mensajes del servidor: PHP deja el texto en un div oculto (aviso-error o aviso-exito)
+// y aquí lo enseñamos en un SweetAlert
 const avisoError = document.getElementById("aviso-error");
 if (avisoError != null) {
     Swal.fire({

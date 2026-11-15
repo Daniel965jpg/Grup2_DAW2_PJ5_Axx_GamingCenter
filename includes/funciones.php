@@ -1,15 +1,15 @@
 <?php
-// FUNCIONES DE APOYO
-// Solo funciones sencillas: aquí no hay conexión, ni consultas, ni redirecciones.
+// FUNCIONES
+// Funciones sencillas que usamos en varias páginas (sin consultas ni redirecciones).
 
-// Quita espacios de los lados y convierte < > " ' & en texto normal (evita XSS)
+// Quitamos espacios y convertimos < > " ' & en texto normal para evitar XSS
 function limpiarDato($dato) {
     $dato = trim($dato);
     $dato = htmlspecialchars($dato);
     return $dato;
 }
 
-// true si alguno de los dos campos llega vacío
+// Devuelve true si alguno de los dos campos está vacío
 function camposVacios($campo1, $campo2) {
     if (empty($campo1) || empty($campo2)) {
         $error = true;
@@ -19,25 +19,23 @@ function camposVacios($campo1, $campo2) {
     return $error;
 }
 
-// Imagen de cada puesto según su nombre (SIM-03, VR-01...) y el tipo de sala.
-// La usan sala.php y ocupados.php, así no repetimos la regla en dos sitios.
+// Elegimos la imagen del puesto por su nombre (SIM, VR) o por el tipo de sala
 function imagenPuesto($nombre, $tipo_sala) {
     if (preg_match('/SIM/', $nombre)) {
         $imagen = '../img/simulador-coche.png';
     } elseif (preg_match('/VR/', $nombre)) {
         $imagen = '../img/gafasrv.webp';
     } elseif ($tipo_sala == 'vip') {
-        $imagen = '../img/logo_vip.png';
+        $imagen = '../img/ordenador-salavip.jpg';
     } elseif ($tipo_sala == 'consola') {
         $imagen = '../img/consola-sala.png';
     } else {
-        $imagen = '../img/ordenador-sala1.png';
+        $imagen = '../img/ordenador-estandar.png';
     }
     return $imagen;
 }
 
-// Cuenta los puestos de una lista: cuántos hay (su capacidad) y cuántos están libres.
-// La usa sala.php para la sala entera, para cada bloque (Squad, Dúo...) y para cada módulo dúo.
+// Contamos cuántos puestos hay en una lista y cuántos están libres
 function resumenPuestos($lista) {
     $resumen = ['puestos' => 0, 'libres' => 0];
     foreach ($lista as $puesto) {
@@ -49,8 +47,7 @@ function resumenPuestos($lista) {
     return $resumen;
 }
 
-// Número con su palabra en singular o plural: "1 ocupado", "3 ocupados".
-// Así no sale "1 ocupados" en los contadores del panel y de la sala.
+// Número con la palabra en singular o plural ("1 ocupado", "3 ocupados")
 function textoCantidad($numero, $singular, $plural) {
     if ($numero == 1) {
         $texto = $numero . ' ' . $singular;

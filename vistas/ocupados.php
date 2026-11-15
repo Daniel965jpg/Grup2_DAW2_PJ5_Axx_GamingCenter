@@ -1,7 +1,6 @@
 <?php
 // VISTA: PUESTOS OCUPADOS
-// Todos los puestos ocupados del local, con filtros por sala y por gamemaster.
-// Al pulsar uno se libera (si lo ocupó quien está conectado) y "Cierre de Local" los libera todos.
+// Todos los puestos ocupados del local, con filtros por sala y gamemaster y el cierre de local.
 
 session_start();
 
@@ -13,7 +12,7 @@ if (!isset($_SESSION['usuario'])) {
 require_once '../bd/conexion.php';
 require_once '../includes/funciones.php';
 
-// Filtros: vacíos = sin filtrar
+// Leemos los filtros de la URL; si llegan vacíos, no se filtra
 $filtro_sala = '';
 $filtro_usuario = '';
 
@@ -27,7 +26,7 @@ if (isset($_GET['id_usuario'])) {
 $mi_id = $_SESSION['usuario'];
 
 try {
-    // Rol del usuario conectado, sacado de la BD: el botón de cierre solo lo ve el admin
+    // 1. Rol del usuario, mirado en la BD: el botón de Cierre de Local solo lo ve el admin
     $stmt = $conexion->prepare("SELECT rol FROM usuarios WHERE id_usuario = ?");
     $stmt->execute([$mi_id]);
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -38,17 +37,18 @@ try {
         $es_admin = false;
     }
 
-    // Opciones de los dos desplegables
+    // 2. Opciones de los desplegables de sala y gamemaster
     $stmt = $conexion->prepare("SELECT id_sala, nombre FROM salas ORDER BY id_sala");
     $stmt->execute();
     $salas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $stmt = $conexion->prepare("SELECT id_usuario, nom_real, cognom_real FROM usuarios ORDER BY nom_real");
-    $stmt->execute();
+    // En el de gamemaster no sale el admin, porque no ocupa puestos
+    $stmt = $conexion->prepare("SELECT id_usuario, nom_real, cognom_real FROM usuarios WHERE rol = ? ORDER BY nom_real");
+    $stmt->execute(['gamemaster']);
     $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Puestos ocupados con su sala y quién los tiene (la ocupación sin fecha_fin).
-    // LEFT JOIN para que salga también un puesto ocupado que no tenga fila en ocupaciones.
+    // 3. Puestos ocupados con su sala y quién los tiene (su ocupación con fecha_fin IS NULL).
+    // Usamos LEFT JOIN para que el puesto salga aunque no tenga ninguna ocupación abierta
     $sql = "SELECT modulos.id_modulo, modulos.nombre, salas.nombre AS sala, salas.tipo AS tipo_sala,
                    usuarios.nom_real AS ocupado_por
             FROM modulos
@@ -58,7 +58,7 @@ try {
             WHERE modulos.estado = 'ocupat'";
     $datos = [];
 
-    // Filtro dinámico: un "AND ... = ?" por cada desplegable elegido
+    // Añadimos un "AND ... = ?" por cada desplegable elegido
     if (!empty($filtro_sala)) {
         $sql = $sql . " AND salas.id_sala = ?";
         $datos[] = $filtro_sala;
@@ -78,7 +78,7 @@ try {
     die();
 }
 
-// Datos que necesita cada tarjeta (aquí todos están ocupados, así que pulsar = liberar)
+// Preparamos los datos de cada tarjeta (aquí todos están ocupados, así que pulsar es liberar)
 $puestos = [];
 foreach ($ocupados as $puesto) {
     $puesto['enlace'] = '../procs/cambiar_estado_proc.php?id_modulo=' . $puesto['id_modulo'] . '&desde=ocupados';
@@ -101,6 +101,7 @@ foreach ($ocupados as $puesto) {
     <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
+    <!-- Cabecera: volver, título y botones -->
     <header class="cabecera">
         <a href="dashboard.php" class="boton-volver">&lt; Volver al panel</a>
         <h1 class="cabecera-titulo">Puestos ocupados (<?php echo count($puestos); ?>)</h1>
@@ -109,7 +110,7 @@ foreach ($ocupados as $puesto) {
                 <div class="usuario-activo"><i class="fa-solid fa-user"></i> <?php echo htmlspecialchars($_SESSION['nom_real']); ?> (<?php echo htmlspecialchars($_SESSION['rol']); ?>)</div>
             <?php } ?>
             <a href="historico.php" class="boton-cabecera">Historial</a>
-            <!-- Solo para el admin. script.js pide confirmación antes de seguir este enlace -->
+            <!-- Cierre de Local: solo para el admin -->
             <?php if ($es_admin) { ?>
                 <a href="../procs/cierre_local_proc.php" id="boton-cierre" class="boton-cierre">Cierre de Local</a>
             <?php } ?>
@@ -117,7 +118,7 @@ foreach ($ocupados as $puesto) {
     </header>
 
     <?php
-    // Mensajes ocultos: script.js los enseña en un SweetAlert
+    // Dejamos los mensajes en divs ocultos y script.js los enseña en un SweetAlert
     if (isset($_SESSION['error'])) {
         echo "<div id='aviso-error' class='oculto'>" . $_SESSION['error'] . "</div>";
         unset($_SESSION['error']);
@@ -129,7 +130,7 @@ foreach ($ocupados as $puesto) {
     ?>
 
     <main class="vista-ocupados">
-        <!-- Al cambiar un desplegable, script.js envía el formulario y se recarga filtrado -->
+        <!-- Filtros: al cambiar un desplegable, script.js envía el formulario -->
         <form method="GET" action="ocupados.php" id="formulario-filtros" class="caja-filtros">
             <div class="filtro">
                 <label for="filtro-sala">Sala</label>
@@ -168,6 +169,7 @@ foreach ($ocupados as $puesto) {
             <p class="mensaje-vacio">No hay puestos ocupados.</p>
         <?php } ?>
 
+        <!-- Tarjetas de los puestos ocupados -->
         <div class="lista-ocupados">
             <?php foreach ($puestos as $puesto) { ?>
                 <?php include '../includes/tarjeta_puesto.php'; ?>
